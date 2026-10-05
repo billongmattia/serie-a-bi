@@ -1,4 +1,4 @@
-# 01 – Setup e database
+﻿# 01 – Setup e database
 
 ## Cosa ho fatto
 - Inizializzato il repository Git (`git init`, branch `main`).
@@ -20,7 +20,7 @@
 
 **`docker-compose.yml`** descrive il servizio `mysql`:
 - `image: mysql:8.4` è la versione di MySQL da usare;
-- `ports: "3307:3306"` collega la porta 3307 del tuo PC alla 3306 *dentro* il container;
+- `ports: "3308:3306"` collega la porta 3308 del tuo PC alla 3306 *dentro* il container;
 - `volumes` fa due cose: `mysql_data` conserva i dati anche se spegni il container, e i due file `.sql` montati in `docker-entrypoint-initdb.d` vengono eseguiti **solo alla prima creazione** del database, per creare le tabelle;
 - `healthcheck` permette a `docker compose up --wait` di aspettare che MySQL sia davvero pronto.
 
@@ -32,7 +32,7 @@
 - Le `FOREIGN KEY` garantiscono che una partita non possa riferirsi a una squadra o a una data inesistente.
 
 ## Cosa è andato diversamente dal piano
-- **Porta 3307 invece di 3306.** Sul tuo PC c'è già un MySQL locale (`mysqld`) che usa la 3306. Per non toccarlo ho spostato quello di Docker sulla 3307. In Power BI useremo quindi `localhost:3307`.
+- **Porta 3308 invece di 3306.** Sul tuo PC la 3306 è occupata da un MySQL locale (`mysqld`) e la 3307 è riservata al tuo progetto Ludiq. Per non toccarli ho messo quello di Docker sulla 3308. In Power BI useremo quindi `localhost:3308`.
 - **Nome del Python.** Il launcher di Windows chiama la tua installazione `Astral/CPython3.14.4`, quindi il venv si crea con `py "-V:Astral/CPython3.14.4" -m venv .venv`.
 - **pandas 3.0:** `pip` ha installato pandas 3.0, più recente di quello previsto nel piano. Se qualche test dei prossimi task si comporta in modo diverso, lo sistemiamo lì.
 

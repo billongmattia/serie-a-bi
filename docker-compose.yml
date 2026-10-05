@@ -8,7 +8,7 @@
       MYSQL_USER: ${MYSQL_USER:-serie_a}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-serie_a_pw}
     ports:
-      - "${MYSQL_PORT:-3307}:3306"
+      - "${MYSQL_PORT:-3308}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./sql/01_staging.sql:/docker-entrypoint-initdb.d/01_staging.sql:ro

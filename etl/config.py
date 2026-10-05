@@ -16,6 +16,6 @@ def db_url() -> str:
     user = os.environ.get("MYSQL_USER", "serie_a")
     password = os.environ.get("MYSQL_PASSWORD", "serie_a_pw")
     host = os.environ.get("MYSQL_HOST", "localhost")
-    port = os.environ.get("MYSQL_PORT", "3307")
+    port = os.environ.get("MYSQL_PORT", "3308")
     database = os.environ.get("MYSQL_DATABASE", "serie_a")
     return f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}"
