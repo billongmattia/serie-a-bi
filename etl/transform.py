@@ -126,14 +126,16 @@ def build_star(cleaned: pd.DataFrame) -> dict[str, pd.DataFrame]:
         "end_year": [int(s) + 1 for s in seasons],
     })
 
-    dates = df[["date_key", "date"]].drop_duplicates("date_key").sort_values("date_key")
+    # Calendario continuo (tutti i giorni, anche senza partite): serve a Power BI
+    # per usare dim_date come tabella data.
+    calendar = pd.Series(pd.date_range(df["date"].min(), df["date"].max(), freq="D"))
     dim_date = pd.DataFrame({
-        "date_key": dates["date_key"].values,
-        "date": dates["date"].dt.strftime("%Y-%m-%d").values,
-        "day": dates["date"].dt.day.values,
-        "month": dates["date"].dt.month.values,
-        "year": dates["date"].dt.year.values,
-        "weekday": dates["date"].dt.day_name().values,
+        "date_key": calendar.dt.strftime("%Y%m%d").astype(int).values,
+        "date": calendar.dt.strftime("%Y-%m-%d").values,
+        "day": calendar.dt.day.values,
+        "month": calendar.dt.month.values,
+        "year": calendar.dt.year.values,
+        "weekday": calendar.dt.day_name().values,
     })
 
     dim_team = pd.DataFrame({"team_key": list(team_keys.values()), "team_name": team_names})
