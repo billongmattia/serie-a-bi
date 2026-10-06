@@ -1,4 +1,4 @@
-# 04 – Transform: dal CSV allo star schema
+﻿# 04 – Transform: dal CSV allo star schema
 
 ## Cosa ho fatto
 - Scritto `etl/transform.py`: pulisce i dati grezzi e costruisce le 5 tabelle del modello (`dim_season`, `dim_date`, `dim_team`, `dim_match`, `fact_team_match`).
@@ -13,7 +13,7 @@
 | `dim_match` (partite) | 3.800 (10 stagioni × 380) |
 | `fact_team_match` (righe di fatto) | 7.600 (2 per partita) |
 | `dim_team` (squadre diverse) | 34, senza duplicati |
-| `dim_date` | 1.177 date |
+| `dim_date` | 3.565 giorni consecutivi (calendario continuo, vedi sotto) |
 | Giornata massima per stagione | 38 in tutte le stagioni |
 | Valori NULL nel fatto | 4, tutti in una partita: **Sassuolo–Pescara del 28/08/2016**, a cui la fonte non dà i gol del primo tempo |
 
@@ -63,3 +63,6 @@ python -m pytest tests/test_transform.py -v
 - **Hash** e identificativi stabili (`sha1`).
 - **Normalizzazione dei dati**: perché `Verona` e `Hellas Verona` devono essere la stessa squadra.
 - **Valori mancanti**: `NULL`/`NaN` contro zero.
+
+## Aggiornamento: calendario continuo in dim_date
+In un primo momento dim_date conteneva solo i giorni in cui si giocava almeno una partita (1.177 date). Quando abbiamo provato a segnare la tabella come *tabella data* in Power BI, ha rifiutato: `La colonna della data non può includere gap nelle date`. Una tabella data deve avere **tutti i giorni senza buchi**, altrimenti le funzioni di calcolo sul tempo non sono affidabili. Ora uild_star genera il calendario con `pd.date_range` dal primo all'ultimo giorno delle stagioni (3.565 giorni), con un test che lo verifica (`test_dim_date_is_a_continuous_calendar`).

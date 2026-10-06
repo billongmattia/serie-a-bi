@@ -116,6 +116,19 @@ def test_dim_date_and_season_columns():
     )
 
 
+def test_dim_date_is_a_continuous_calendar():
+    rows = [
+        {**FULL, "Date": "2016-08-20"},
+        {**FULL, "Date": "2016-08-27", "HomeTeam": "Roma", "AwayTeam": "Udinese"},
+    ]
+    star, _ = star_from(rows)
+    dates = pd.to_datetime(star["dim_date"]["date"])
+    assert len(dates) == 8  # dal 20 al 27 agosto compresi
+    assert (dates.diff().dropna() == pd.Timedelta(days=1)).all()
+    assert star["dim_date"]["date_key"].is_unique
+    assert set(star["dim_match"]["date_key"]) <= set(star["dim_date"]["date_key"])
+
+
 def test_transform_all_counts_rejections_per_season():
     frames = {2016: raw([FULL, {**FULL, "Date": None}]), 2017: raw([FULL])}
     star, rejected = t.transform_all(frames, {})

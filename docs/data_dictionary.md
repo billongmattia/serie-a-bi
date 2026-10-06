@@ -1,4 +1,4 @@
-# Dizionario dei dati
+﻿# Dizionario dei dati
 
 Database MySQL `serie_a`. Fonte: dataset DataHub `football/italian-serie-a` (derivato da football-data.co.uk, licenza PDDL), stagioni 2016/17 → 2025/26.
 
@@ -24,7 +24,7 @@ Database MySQL `serie_a`. Fonte: dataset DataHub `football/italian-serie-a` (der
 ## `dim_date`
 | Colonna | Tipo | Significato |
 |---|---|---|
-| `date_key` | INT, PK | Data in formato `AAAAMMGG` (es. 20160820) |
+| `date_key` | INT, PK | Data in formato `AAAAMMGG` (es. 20160820). Il calendario è **continuo**: contiene tutti i giorni dal primo all'ultimo della serie, anche quelli senza partite |
 | `date` | DATE | Data della partita |
 | `day`, `month`, `year` | INT | Componenti della data |
 | `weekday` | VARCHAR(10) | Giorno della settimana, in inglese (es. `Saturday`) |
