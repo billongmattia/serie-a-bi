@@ -10,8 +10,8 @@
 - [x] **M3.3** Installare Power BI Desktop e il connettore MySQL (MySQL Connector/NET).
 - [x] **M3.4** Importare le 5 tabelle del modello da `localhost:3308`, database `serie_a`.
 - [x] **M3.5** Creare le relazioni (`dim_match → fact_team_match`, `dim_team → fact_team_match` attiva e inattiva per l'avversario, `dim_date` e `dim_season → dim_match`) e segnare `dim_date` come tabella data.
-- [ ] **M3.6** Creare le misure DAX nella tabella "Misure".
-- [ ] **M3.7** Costruire la pagina **Classifica** (con forma recente).
+- [x] **M3.6** Creare le misure DAX nella tabella "Misure" (16 misure create, verificato Juventus 2016/17 = 91 punti).
+- [ ] **M3.7** Costruire la pagina **Classifica**. *Fatto:* slicer stagione e tabella con posizioni. *Da fare:* completare le colonne (Vittorie, Pareggi, Sconfitte, Gol), togliere i totali, slicer a tendina, forma recente (ultime 5).
 - [ ] **M3.8** Costruire la pagina **Squadra**.
 - [ ] **M3.9** Costruire la pagina **Confronti tra stagioni**.
 - [ ] **M3.10** Costruire la pagina **Disciplina e gioco duro**.
