@@ -37,6 +37,15 @@ Posizione = RANKX(ALLSELECTED(dim_team[team_name]), [Punti] * 1000 + [Diff Reti]
 ```
 Posizione in classifica tra le squadre selezionate. Ordina per punti e, a parità, per differenza reti (il fattore 1000 dà ai punti la precedenza). `ALLSELECTED` mantiene i filtri scelti dall'utente (es. la stagione) ma ignora quello della riga corrente.
 
+## Forma recente
+
+```
+Ordine Partita = MAX(fact_team_match[match_key])
+```
+Restituisce la chiave della partita più recente nel contesto corrente. Si usa come criterio "Per valore" nel filtro **Principali N** della tabella degli ultimi 5 risultati (le chiavi crescono con la data).
+
+**Perché `fact_team_match` e non `dim_match`.** Le relazioni vanno da `dim_match` verso il fatto (uno a molti, filtro in una sola direzione). Il filtro della squadra (`dim_team`) arriva al fatto ma **non risale** a `dim_match`. Con `MAX(dim_match[match_key])` la misura vedeva tutte le partite di ogni giorno, di tutte le squadre, e il filtro "primi 5" sceglieva le ultime 5 date del campionato (di cui poche con la squadra scelta): la tabella mostrava 2 righe invece di 5. Usando la colonna del fatto, la misura vede solo le partite della squadra selezionata.
+
 ## Medie e percentuali
 
 ```
