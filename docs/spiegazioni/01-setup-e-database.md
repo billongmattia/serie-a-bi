@@ -51,3 +51,10 @@ docker compose down -v            # spegne e CANCELLA i dati (per rifare lo sche
 - Ambiente virtuale Python (`venv`) e file `requirements.txt`.
 - Container Docker e volume, e a cosa serve `docker compose`.
 - Staging area nel mondo ETL.
+
+## Correzione successiva: il controllo di salute (healthcheck)
+Durante la verifica "da zero" l'ETL è fallito una volta con un errore di connessione subito dopo `docker compose up -d --wait`. Causa più probabile: alla **prima** creazione del database l'immagine di MySQL avvia un server *temporaneo* per eseguire gli script SQL, e quel server risponde a `mysqladmin ping -h localhost` (che usa un socket locale) **prima** che il server vero accetti connessioni di rete. Così `--wait` vedeva "Healthy" troppo presto.
+
+Il controllo ora usa `-h 127.0.0.1`, cioè una connessione di rete (TCP): il server temporaneo non ascolta sulla rete, quindi "Healthy" arriva solo quando il database è davvero pronto. Con questa modifica, due prove di fila da database vuoto (spegnimento con cancellazione del volume, `up --wait`, ETL immediato) sono andate bene. Il fallimento originale non si lascia riprodurre a comando, quindi la correzione è motivata dal meccanismo e verificata solo sul fatto che non si è più presentato.
+
+**Cosa imparare:** un controllo di salute deve verificare ciò che serve davvero al client (qui: accettare connessioni TCP), non un'alternativa più comoda.
