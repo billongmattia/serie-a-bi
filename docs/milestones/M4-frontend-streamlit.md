@@ -1,4 +1,4 @@
-# M4 – Frontend Streamlit
+﻿# M4 – Frontend Streamlit
 
 **Stato:** 📝 proposta, **da approvare** prima di essere aggiunta alla spec e al piano. · **Piano:** nuovo.
 
@@ -22,7 +22,7 @@ MySQL (star schema)  →  app/queries.py  →  app/pages (Streamlit)  →  brows
 - [ ] **M4.5 Pagina Confronti tra stagioni** – gol a partita, % vittorie in casa, cartellini, per stagione.
 - [ ] **M4.6 Pagina Disciplina e gioco duro** – falli, gialli e rossi a partita per squadra e per stagione.
 - [ ] **M4.7 Esecuzione e screenshot** – avvio con `streamlit run app/main.py`, controllo delle 4 pagine, screenshot in `docs/screenshots/`.
-- [ ] **M4.8 Spiegazione** – `docs/spiegazioni/08-streamlit.md`.
+- [ ] **M4.8 Spiegazione** – `docs/spiegazioni/09-streamlit.md`.
 
 ## Decisioni aperte
 1. **Streamlit si aggiunge a Power BI** (consigliato: due frontend sugli stessi dati, due competenze nel CV) o lo sostituisce?

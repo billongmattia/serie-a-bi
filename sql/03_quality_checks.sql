@@ -1,15 +1,11 @@
--- check: ogni stagione ha 380 partite
-SELECT season_key, COUNT(*) AS partite
-FROM dim_match
-GROUP BY season_key
-HAVING COUNT(*) <> 380;
-
--- check: ogni stagione ha 20 squadre
-SELECT m.season_key, COUNT(DISTINCT f.team_key) AS squadre
-FROM fact_team_match f
-JOIN dim_match m ON m.match_key = f.match_key
+-- check: ogni stagione è un girone completo (partite = squadre x (squadre - 1))
+SELECT m.season_key,
+       COUNT(DISTINCT m.match_key) AS partite,
+       COUNT(DISTINCT f.team_key) AS squadre
+FROM dim_match m
+JOIN fact_team_match f ON f.match_key = m.match_key
 GROUP BY m.season_key
-HAVING COUNT(DISTINCT f.team_key) <> 20;
+HAVING COUNT(DISTINCT m.match_key) <> COUNT(DISTINCT f.team_key) * (COUNT(DISTINCT f.team_key) - 1);
 
 -- check: ogni partita ha esattamente due righe di fatto
 SELECT m.match_key

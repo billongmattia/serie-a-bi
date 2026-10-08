@@ -9,7 +9,7 @@
 - [x] **M5.1 README** – presentazione, screenshot, architettura, star schema, quickstart in pochi comandi, come aprire il `.pbix`, come avviare Streamlit (se M4), **citazione della fonte dati** (DataHub, licenza PDDL) e limiti (nessun arbitro).
 - [x] **M5.2 Insight** – `docs/insights.md` con 3–5 osservazioni sui dati, ciascuna col numero letto dalla dashboard.
 - [x] **M5.3 Verifica da zero** – clone pulito, venv nuovo, `docker compose up`, `python -m etl.run_etl`, `python -m pytest`: 25 test verdi, 3.800 / 7.600 righe, ETL idempotente. Corretto l'healthcheck di Docker (vedi spiegazione 01).
-- [ ] **M5.4 Revisione finale del codice** – un controllo di tutto il lavoro prima della pubblicazione.
+- [x] **M5.4 Revisione finale del codice** – fatta dall'autore (non da un revisore indipendente): 4 problemi corretti con test (log degli errori, controlli di qualità non fissi a 380/20, controllo dei campioni che non salta più in silenzio, README su `.env`), 29 test verdi. Rimandati 5 punti di impatto basso: vedi [spiegazione 08](../spiegazioni/08-revisione-finale.md).
 - [ ] **M5.5 Pubblicazione su GitHub** – creare o collegare il repository e fare il push (si decide insieme: nome, visibilità).
 - [ ] **M5.6 Spiegazione** – `docs/spiegazioni/07-readme-e-rifinitura.md`.
 

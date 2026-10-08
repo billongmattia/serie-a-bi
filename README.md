@@ -64,7 +64,7 @@ L'ETL scrive un riepilogo e il log in `logs/etl.log`. Si può rilanciare quando 
 
 **Aprire la dashboard:** apri `powerbi/dashboard.pbix`. Se Power BI chiede le credenziali del database: server `localhost:3308`, database `serie_a`, utente `serie_a`, password `serie_a_pw` (valori di sviluppo del database locale in Docker), tipo "Database". Poi **Home → Aggiorna**.
 
-I parametri di connessione si possono cambiare con le variabili d'ambiente elencate in [`.env.example`](.env.example).
+**Cambiare i parametri del database** (porta, utente, password): le variabili sono elencate in [`.env.example`](.env.example). Un file `.env` è letto **solo da Docker Compose**; l'ETL Python legge le **variabili d'ambiente** della shell, quindi vanno impostate anche lì (per esempio `$env:MYSQL_PORT = "3310"` in PowerShell prima di lanciare `python -m etl.run_etl`). Senza modifiche, entrambi usano i valori predefiniti.
 
 ## Struttura del repository
 ```
@@ -78,8 +78,9 @@ I parametri di connessione si possono cambiare con le variabili d'ambiente elenc
 ```
 
 ## Qualità e test
-- **25 test** automatici sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità).
-- Controlli SQL dopo ogni caricamento: 380 partite e 20 squadre per stagione, due righe di fatto per partita, punti e gol coerenti, **riconciliazione** con i punti ufficiali dei campioni (Juventus 2016/17: 91; Inter 2023/24: 94).
+- **29 test** automatici sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori).
+- Controlli SQL dopo ogni caricamento: ogni stagione è un **girone completo** (partite = squadre × (squadre − 1): 380 con 20 squadre), due righe di fatto per partita, punti e gol coerenti, **riconciliazione** con i punti ufficiali dei campioni (Juventus 2016/17: 91; Inter 2023/24: 94).
+- Gli errori non previsti dell'ETL finiscono in `logs/etl.log` e il programma esce con codice 1.
 
 ## Fonte dei dati
 Dataset [**Italian Serie A** di DataHub](https://datahub.io/football/italian-serie-a), a sua volta derivato da [football-data.co.uk](https://www.football-data.co.uk/). Licenza [Open Data Commons Public Domain Dedication and License (PDDL)](https://opendatacommons.org/licenses/pddl/).
@@ -88,7 +89,7 @@ Dataset [**Italian Serie A** di DataHub](https://datahub.io/football/italian-ser
 - La colonna **arbitro** è sempre vuota nella fonte per la Serie A: non è presente nel modello.
 - La **giornata** è ricostruita (il CSV non la contiene) come il numero progressivo di partita delle squadre in stagione: i recuperi possono falsarla leggermente.
 - Una partita (Sassuolo–Pescara, 28/08/2016) non ha i gol del primo tempo nella fonte: restano `NULL`.
-- Il periodo è fissato a 10 stagioni complete (2016/17–2025/26): cambiare `FIRST_SEASON` in `etl/config.py` per estenderlo.
+- Il periodo è fissato a 10 stagioni complete (2016/17–2025/26): cambiare `FIRST_SEASON` in `etl/config.py` per estenderlo. Le stagioni più vecchie avranno più valori `NULL` (non provato) e una **stagione in corso fallirebbe** il controllo del girone completo.
 
 ## Documentazione e percorso di lavoro
 - Spiegazioni passo per passo in [`docs/spiegazioni/`](docs/spiegazioni/).
