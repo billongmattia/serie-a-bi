@@ -1,6 +1,6 @@
 ﻿# M3 – Dashboard Power BI
 
-**Stato:** 🔄 in corso · **Piano:** Task 6 · **Spiegazione:** `06-power-bi.md` (da scrivere a fine milestone)
+**Stato:** ✅ completata (restano due screenshot da rifare in M5) · **Piano:** Task 6 · **Spiegazione:** [06-power-bi](../spiegazioni/06-power-bi.md)
 
 **Obiettivo:** un modello Power BI e una dashboard a 4 pagine sopra il data warehouse, da mostrare nel CV.
 
@@ -10,13 +10,13 @@
 - [x] **M3.3** Installare Power BI Desktop e il connettore MySQL (MySQL Connector/NET).
 - [x] **M3.4** Importare le 5 tabelle del modello da `localhost:3308`, database `serie_a`.
 - [x] **M3.5** Creare le relazioni (`dim_match → fact_team_match`, `dim_team → fact_team_match` attiva e inattiva per l'avversario, `dim_date` e `dim_season → dim_match`) e segnare `dim_date` come tabella data.
-- [x] **M3.6** Creare le misure DAX nella tabella "Misure" (16 misure create, verificato Juventus 2016/17 = 91 punti).
+- [x] **M3.6** Creare le misure DAX nella tabella "Misure" (17 misure create, verificato Juventus 2016/17 = 91 punti).
 - [x] **M3.7** Costruire la pagina **Classifica**: slicer stagione, tabella con posizione, V/N/P, gol e punti (verificata a mano su 2016/17 e 2025/26), slicer squadra e tabella degli ultimi 5 risultati (misura `Ordine Partita`).
-- [ ] **M3.8** Costruire la pagina **Squadra**.
-- [ ] **M3.9** Costruire la pagina **Confronti tra stagioni**.
-- [ ] **M3.10** Costruire la pagina **Disciplina e gioco duro**.
-- [ ] **M3.11** Salvare `powerbi/dashboard.pbix` ed esportare uno screenshot per pagina in `powerbi/screenshots/`.
-- [ ] **M3.12** Scrivere `docs/spiegazioni/06-power-bi.md` (relazioni, contesto di filtro, `CALCULATE`, `DIVIDE`, `RANKX`).
+- [x] **M3.8** Costruire la pagina **Squadra** (schede, istogramma casa/trasferta con colonna `Campo`).
+- [x] **M3.9** Costruire la pagina **Confronti tra stagioni** (4 grafici, valori verificati sul database).
+- [x] **M3.10** Costruire la pagina **Disciplina e gioco duro** (tabella, barre dei gialli, andamento dei falli).
+- [x] **M3.11** Salvare `powerbi/dashboard.pbix` ed esportare uno screenshot per pagina in `powerbi/screenshots/`. *Da rifinire in M5:* `02-squadra.png` (slicer ancora ad elenco lungo) e `03-confronti.png` (scritta "Attiva Windows" in basso a destra).
+- [x] **M3.12** Scrivere `docs/spiegazioni/06-power-bi.md` (relazioni, contesto di filtro, `CALCULATE`, `DIVIDE`, `RANKX`).
 
 ## Note
 - I passi da M3.3 a M3.11 si fanno nell'interfaccia di Power BI Desktop: li eseguiamo insieme, io guido e tu clicchi.

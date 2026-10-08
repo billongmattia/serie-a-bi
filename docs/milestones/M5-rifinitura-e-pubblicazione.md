@@ -5,6 +5,7 @@
 **Obiettivo:** rendere il repository presentabile a un recruiter e riproducibile da chiunque lo cloni.
 
 ## Task
+- [ ] **M5.0 Rifinitura della dashboard** – rifare `02-squadra.png` (slicer a tendina, layout ordinato) e `03-confronti.png` (senza la scritta "Attiva Windows" in basso a destra, lasciando un margine sotto i grafici); facoltativo: allungare la tabella di Disciplina, togliere la smussatura dalle linee, titoli e colori coerenti; poi `Ctrl+S` e ricommittare il `.pbix`.
 - [ ] **M5.1 README** – presentazione, screenshot, architettura, star schema, quickstart in pochi comandi, come aprire il `.pbix`, come avviare Streamlit (se M4), **citazione della fonte dati** (DataHub, licenza PDDL) e limiti (nessun arbitro).
 - [ ] **M5.2 Insight** – `docs/insights.md` con 3–5 osservazioni sui dati, ciascuna col numero letto dalla dashboard.
 - [ ] **M5.3 Verifica da zero** – `docker compose down -v`, `up`, `python -m etl.run_etl`, `python -m pytest`: tutto deve funzionare da database vuoto.
