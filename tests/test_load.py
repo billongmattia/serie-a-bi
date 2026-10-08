@@ -1,4 +1,5 @@
 import sqlite3
+from itertools import permutations
 
 import pandas as pd
 import pytest
@@ -74,5 +75,28 @@ def test_quality_checks_flag_incomplete_season(engine):
     _, tables = star()
     load_star(engine, tables)
     problems = run_quality_checks(engine)
-    assert any("380" in p for p in problems)
+    assert any("girone" in p for p in problems)
     assert not any("due righe" in p for p in problems)
+
+
+def test_quality_accepts_a_complete_season_of_any_size(engine):
+    # 4 squadre, andata e ritorno = 12 partite: valido anche se non sono 20 squadre
+    rows = [
+        {**ROW, "Date": f"2000-09-{i + 1:02d}", "HomeTeam": home, "AwayTeam": away}
+        for i, (home, away) in enumerate(permutations(["A", "B", "C", "D"], 2))
+    ]
+    frames = {2000: pd.DataFrame(rows, dtype="object")}
+    load_star(engine, t.transform_all(frames, {})[0])
+    assert run_quality_checks(engine) == []
+
+
+def test_quality_flags_champion_check_when_the_team_is_missing(engine):
+    # stagione 2016 caricata ma senza Juventus (es. nome cambiato nella mappa)
+    rows = [
+        {**ROW, "HomeTeam": "Roma", "AwayTeam": "Udinese"},
+        {**ROW, "Date": "2016-08-27", "HomeTeam": "Lazio", "AwayTeam": "Milan"},
+    ]
+    frames = {2016: pd.DataFrame(rows, dtype="object")}
+    load_star(engine, t.transform_all(frames, {})[0])
+    problems = run_quality_checks(engine)
+    assert any("Juventus" in p for p in problems)

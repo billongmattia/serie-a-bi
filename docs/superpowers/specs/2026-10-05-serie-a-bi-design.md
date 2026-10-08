@@ -77,7 +77,7 @@ Prima della trasformazione, uno script produce una matrice stagione × colonna (
 
 ## Verifiche
 - Test pytest sulla trasformazione: una partita produce una riga in `dim_match` e due in `fact_team_match`, punti 3/1/0, date lette correttamente, `match_id` stabile.
-- Controlli di qualità (`sql/03_quality_checks.sql`): 380 partite per stagione (20 squadre, 38 giornate), punti dei campioni (Juventus 2016/17 = 91, Inter 2023/24 = 94), nessuna squadra duplicata sotto nomi diversi, ogni partita ha esattamente due righe di fatto.
+- Controlli di qualità (`sql/03_quality_checks.sql`): ogni stagione è un girone completo (partite = squadre × (squadre − 1): 380 con 20 squadre; il controllo vale per qualsiasi numero di squadre e intercetta i nomi duplicati), punti dei campioni (la squadra mancante è segnalata, non ignorata) (Juventus 2016/17 = 91, Inter 2023/24 = 94), nessuna squadra duplicata sotto nomi diversi, ogni partita ha esattamente due righe di fatto.
 
 ## Struttura del repository
 ```

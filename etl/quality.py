@@ -17,6 +17,9 @@ POINTS_QUERY = text(
 )
 
 
+SEASON_MATCHES_QUERY = text("SELECT COUNT(*) FROM dim_match WHERE season_key = :season")
+
+
 def parse_checks(sql_text: str) -> dict[str, str]:
     checks: dict[str, str] = {}
     name, buffer = None, []
@@ -42,7 +45,12 @@ def run_quality_checks(engine, sql_text: str | None = None) -> list[str]:
             if rows:
                 problems.append(f"{name}: {len(rows)} righe in violazione")
         for (season, team), expected in EXPECTED_POINTS.items():
+            matches = conn.execute(SEASON_MATCHES_QUERY, {"season": season}).scalar()
+            if not matches:
+                continue  # stagione non caricata: niente da verificare
             actual = conn.execute(POINTS_QUERY, {"season": season, "team": team}).scalar()
-            if actual is not None and int(actual) != expected:
+            if actual is None:
+                problems.append(f"punti {team} {season}: squadra non trovata (nome cambiato?)")
+            elif int(actual) != expected:
                 problems.append(f"punti {team} {season}: attesi {expected}, trovati {int(actual)}")
     return problems

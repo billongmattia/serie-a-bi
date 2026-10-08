@@ -28,6 +28,14 @@ def setup_logging() -> None:
 
 def main() -> int:
     setup_logging()
+    try:
+        return _run()
+    except Exception:
+        log.exception("ETL interrotto da un errore non gestito")
+        return 1
+
+
+def _run() -> int:
     paths, failures = extract_all()
     if not paths:
         log.error("Nessun CSV disponibile: ETL interrotto")
