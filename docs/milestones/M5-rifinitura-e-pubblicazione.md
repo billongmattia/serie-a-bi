@@ -8,7 +8,7 @@
 - [ ] **M5.0 Rifinitura della dashboard** – rifare `02-squadra.png` (slicer a tendina, layout ordinato) e `03-confronti.png` (senza la scritta "Attiva Windows" in basso a destra, lasciando un margine sotto i grafici); facoltativo: allungare la tabella di Disciplina, togliere la smussatura dalle linee, titoli e colori coerenti; poi `Ctrl+S` e ricommittare il `.pbix`.
 - [x] **M5.1 README** – presentazione, screenshot, architettura, star schema, quickstart in pochi comandi, come aprire il `.pbix`, come avviare Streamlit (se M4), **citazione della fonte dati** (DataHub, licenza PDDL) e limiti (nessun arbitro).
 - [x] **M5.2 Insight** – `docs/insights.md` con 3–5 osservazioni sui dati, ciascuna col numero letto dalla dashboard.
-- [ ] **M5.3 Verifica da zero** – `docker compose down -v`, `up`, `python -m etl.run_etl`, `python -m pytest`: tutto deve funzionare da database vuoto.
+- [x] **M5.3 Verifica da zero** – clone pulito, venv nuovo, `docker compose up`, `python -m etl.run_etl`, `python -m pytest`: 25 test verdi, 3.800 / 7.600 righe, ETL idempotente. Corretto l'healthcheck di Docker (vedi spiegazione 01).
 - [ ] **M5.4 Revisione finale del codice** – un controllo di tutto il lavoro prima della pubblicazione.
 - [ ] **M5.5 Pubblicazione su GitHub** – creare o collegare il repository e fare il push (si decide insieme: nome, visibilità).
 - [ ] **M5.6 Spiegazione** – `docs/spiegazioni/07-readme-e-rifinitura.md`.
