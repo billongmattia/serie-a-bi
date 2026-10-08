@@ -97,6 +97,23 @@ Power BI: si parte con il `.pbix` (binario), con misure DAX documentate in `docs
 ## Criterio di successo
 Repository pulito su GitHub, README con modello, ETL e insight, dashboard Power BI navigabile (file .pbix, screenshot e breve video nel README).
 
+## Frontend Streamlit (M4, aggiunto il 2026-10-08)
+**Decisioni dell'autore:** Streamlit **in aggiunta** a Power BI (non lo sostituisce), grafici con **Plotly**, **solo in locale** (nessuna pubblicazione online).
+
+**Obiettivo:** un'app web in Python che mostra le stesse analisi della dashboard Power BI leggendo lo stesso database MySQL, per dimostrare anche competenze Python + SQL + visualizzazione.
+
+**Architettura:**
+```
+MySQL (star schema) → app/queries.py (SQL + pandas, testato) → app/data.py (cache) → app/views/* (Streamlit + Plotly) → browser
+```
+- **`app/queries.py`**: funzioni pure che ricevono un engine SQLAlchemy e restituiscono DataFrame (classifica, forma recente, riepilogo squadra, punti casa/trasferta, tendenze tra stagioni, disciplina). Sono la logica di business e si testano con pytest su SQLite, senza Streamlit.
+- **`app/db.py`**: connessione (riusa `etl.config.db_url()`) e controllo che il database sia raggiungibile.
+- **`app/data.py`**: involucri con la cache di Streamlit.
+- **`app/views/`**: una pagina per modulo (Classifica, Squadra, Confronti, Disciplina), solo presentazione.
+- **Coerenza con Power BI:** stessi KPI, stessa regola di classifica (punti, poi differenza reti), gli stessi numeri per le stesse selezioni.
+- **Gestione degli errori:** database non raggiungibile → messaggio chiaro invece della traccia dell'errore; squadra senza partite o tiri mancanti → messaggio o "n/d".
+- **Esecuzione:** `python -m streamlit run app/main.py` (con il database già avviato).
+
 ## Rimandato (fase finale, opzionale)
 Estensione del periodo (modifica di `FIRST_SEASON`), CI con GitHub Actions, formato `.pbip`, seconda dashboard in Metabase. Makefile escluso (poco comodo su Windows).
 
