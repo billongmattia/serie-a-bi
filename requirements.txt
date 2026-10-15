@@ -4,3 +4,5 @@ PyMySQL>=1.1
 cryptography>=42
 requests>=2.31
 pytest>=8.0
+streamlit>=1.40
+plotly>=5.24
