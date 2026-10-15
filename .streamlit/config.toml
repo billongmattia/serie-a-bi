@@ -1,0 +1,6 @@
+[server]
+# App solo locale: ascolta solo su questo computer, non sulla rete.
+address = "localhost"
+
+[browser]
+gatherUsageStats = false

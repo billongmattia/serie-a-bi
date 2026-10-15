@@ -55,6 +55,17 @@ python -m pytest                       # 51 test
 - **Testare senza il database vero** usando dati piccoli e calcolati a mano.
 - Differenza tra uno strumento a clic (Power BI) e uno scritto in codice (Streamlit): quando conviene l'uno o l'altro.
 
+## Revisione finale (fatta dall'autore, non da un revisore indipendente)
+**Trovato e corretto:** l'app, avviata senza opzioni, **ascoltava su tutte le interfacce di rete** (nel log compaiono un "Network URL" e un "External URL"): chiunque nella rete locale avrebbe potuto aprirla e leggere il database, mentre la decisione era "solo in locale". Ora `.streamlit/config.toml` imposta `server.address = "localhost"`. Un test (`test_streamlit_listens_on_localhost_only`) controlla il file e, a mano, ho verificato a runtime che l'app ascolta solo su `127.0.0.1` e che l'indirizzo di rete del PC rifiuta la connessione. La suite passa da 51 a **52 test**.
+
+**Rimandato (impatto basso):**
+- `app/main.py` (controllo del database e navigazione) è verificato a mano ma non da un test automatico.
+- I dati sono in cache per 10 minuti: dopo aver rilanciato l'ETL l'app può mostrare valori vecchi fino a 10 minuti (o fino al riavvio).
+- Nel grafico dei gialli per squadra Plotly mostra una etichetta sì e una no (grafico basso).
+- Gli screenshot dell'app mancano: si fanno in M4b, con la nuova grafica.
+
+**Cosa imparare:** i valori predefiniti dei programmi non sono quelli che hai deciso tu. "Solo in locale" è una decisione che va **scritta nella configurazione e verificata**, non data per scontata.
+
 ## Cose da migliorare in fase 2 (veste grafica)
 - Nel grafico delle ammonizioni per squadra Plotly mostra una etichetta sì e una no perché il grafico è basso: va alzato.
 - Tema scuro personalizzato, schede KPI, forma recente a pallini, tab: vedi [M4b](../milestones/M4b-veste-grafica-streamlit.md) e il [mockup](../design/README.md).

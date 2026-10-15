@@ -73,7 +73,7 @@ L'ETL scrive un riepilogo e il log in `logs/etl.log`. Si può rilanciare quando 
 python -m streamlit run app/main.py
 ```
 
-Si apre su <http://localhost:8501> (Classifica, Squadra, Confronti tra stagioni, Disciplina). Se MySQL è spento, l'app lo dice con un messaggio. La logica sta in `app/queries.py` (funzioni testate) e le pagine in `app/views/`.
+Si apre su <http://localhost:8501> (Classifica, Squadra, Confronti tra stagioni, Disciplina). L'app è **solo locale**: ascolta solo su `localhost` (impostazione in `.streamlit/config.toml`). Se MySQL è spento, l'app lo dice con un messaggio. La logica sta in `app/queries.py` (funzioni testate) e le pagine in `app/views/`.
 
 **Cambiare i parametri del database** (porta, utente, password): le variabili sono elencate in [`.env.example`](.env.example). Un file `.env` è letto **solo da Docker Compose**; l'ETL Python legge le **variabili d'ambiente** della shell, quindi vanno impostate anche lì (per esempio `$env:MYSQL_PORT = "3310"` in PowerShell prima di lanciare `python -m etl.run_etl`). Senza modifiche, entrambi usano i valori predefiniti.
 
@@ -90,7 +90,7 @@ Si apre su <http://localhost:8501> (Classifica, Squadra, Confronti tra stagioni,
 ```
 
 ## Qualità e test
-- **51 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 22 sull'app (query su un mini-campionato con risultati calcolati a mano, connessione al database, rendering delle pagine).
+- **52 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 23 sull'app (query su un mini-campionato con risultati calcolati a mano, connessione al database, rendering delle pagine, configurazione solo locale).
 - Controlli SQL dopo ogni caricamento: ogni stagione è un **girone completo** (partite = squadre × (squadre − 1): 380 con 20 squadre), due righe di fatto per partita, punti e gol coerenti, **riconciliazione** con i punti ufficiali dei campioni (Juventus 2016/17: 91; Inter 2023/24: 94).
 - Gli errori non previsti dell'ETL finiscono in `logs/etl.log` e il programma esce con codice 1.
 
