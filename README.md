@@ -9,13 +9,16 @@ Progetto da portfolio di **Mattia Billong**, studente ITS Business Intelligence 
 ## Cosa fa
 - Scarica i risultati di 10 stagioni (3.800 partite) e li **pulisce e trasforma** in uno star schema.
 - Li carica in **MySQL** (Docker) in modo **ripetibile**: l'ETL si può rilanciare senza duplicare i dati.
-- Controlla la **qualità dei dati** (380 partite e 20 squadre per stagione, punti dei campioni riconciliati con le classifiche ufficiali).
+- Controlla la **qualità dei dati** (ogni stagione è un girone completo, punti dei campioni riconciliati con le classifiche ufficiali).
 - Li mostra in una **dashboard Power BI** a 4 pagine: classifica, squadra, confronti tra stagioni, disciplina.
+- Li mostra anche in un'**app web Streamlit** (con grafici Plotly) con le stesse 4 pagine, che legge lo stesso database.
 
 ## Architettura
 ```
-CSV (DataHub)  →  profiling  →  ETL Python (pandas)  →  MySQL 8.4 (Docker)  →  Power BI Desktop
-                                 extract · transform · load   staging + star schema   modello + DAX + dashboard
+CSV (DataHub)  →  profiling  →  ETL Python (pandas)  →  MySQL 8.4 (Docker)  ─┬→  Power BI Desktop
+                                 extract · transform · load   staging + star schema  │   modello + DAX + dashboard
+                                                                                     └→  App Streamlit
+                                                                                         query testate + Plotly
 ```
 
 ## Modello dati
@@ -64,6 +67,14 @@ L'ETL scrive un riepilogo e il log in `logs/etl.log`. Si può rilanciare quando 
 
 **Aprire la dashboard:** apri `powerbi/dashboard.pbix`. Se Power BI chiede le credenziali del database: server `localhost:3308`, database `serie_a`, utente `serie_a`, password `serie_a_pw` (valori di sviluppo del database locale in Docker), tipo "Database". Poi **Home → Aggiorna**.
 
+**App Streamlit:** con il database avviato, dalla cartella del progetto e con l'ambiente virtuale attivo:
+
+```powershell
+python -m streamlit run app/main.py
+```
+
+Si apre su <http://localhost:8501> (Classifica, Squadra, Confronti tra stagioni, Disciplina). Se MySQL è spento, l'app lo dice con un messaggio. La logica sta in `app/queries.py` (funzioni testate) e le pagine in `app/views/`.
+
 **Cambiare i parametri del database** (porta, utente, password): le variabili sono elencate in [`.env.example`](.env.example). Un file `.env` è letto **solo da Docker Compose**; l'ETL Python legge le **variabili d'ambiente** della shell, quindi vanno impostate anche lì (per esempio `$env:MYSQL_PORT = "3310"` in PowerShell prima di lanciare `python -m etl.run_etl`). Senza modifiche, entrambi usano i valori predefiniti.
 
 ## Struttura del repository
@@ -72,13 +83,14 @@ L'ETL scrive un riepilogo e il log in `logs/etl.log`. Si può rilanciare quando 
 ├── requirements.txt
 ├── sql/                      schema (staging, star schema) e controlli di qualità
 ├── etl/                      extract, transform, load, qualità, run_etl
+├── app/                      app Streamlit: query testate, cache, pagine
 ├── tests/                    test automatici (pytest)
 ├── powerbi/                  dashboard.pbix e screenshot
 └── docs/                     dizionario dati, misure DAX, insight, milestone, spiegazioni
 ```
 
 ## Qualità e test
-- **29 test** automatici sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori).
+- **51 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 22 sull'app (query su un mini-campionato con risultati calcolati a mano, connessione al database, rendering delle pagine).
 - Controlli SQL dopo ogni caricamento: ogni stagione è un **girone completo** (partite = squadre × (squadre − 1): 380 con 20 squadre), due righe di fatto per partita, punti e gol coerenti, **riconciliazione** con i punti ufficiali dei campioni (Juventus 2016/17: 91; Inter 2023/24: 94).
 - Gli errori non previsti dell'ETL finiscono in `logs/etl.log` e il programma esce con codice 1.
 
@@ -97,6 +109,6 @@ Dataset [**Italian Serie A** di DataHub](https://datahub.io/football/italian-ser
 - Specifica e piano di implementazione in [`docs/superpowers/`](docs/superpowers/).
 
 ## Prossimi passi
-- Frontend **Streamlit** sugli stessi dati.
+- Veste grafica dell'app Streamlit (tema scuro, schede KPI, forma recente a pallini).
 - Conversione della dashboard in formato `.pbip` (testuale, più adatto a Git).
 - CI con GitHub Actions per eseguire i test a ogni push.
