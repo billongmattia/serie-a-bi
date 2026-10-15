@@ -8,7 +8,7 @@ Aggiornato al 2026-10-15. Ogni milestone ha il suo file con le task, spuntate qu
 | M2 | [Pipeline dati (ETL)](M2-pipeline-dati.md) | ✅ completata | Task 2–5 |
 | M3 | [Dashboard Power BI](M3-dashboard-power-bi.md) | ✅ completata | Task 6 |
 | M4 | [Frontend Streamlit, fase 1: funzionale](M4-frontend-streamlit.md) | ✅ completata | [Streamlit](../superpowers/plans/2026-10-08-streamlit-frontend.md) |
-| M4b | [Frontend Streamlit, fase 2: veste grafica](M4b-veste-grafica-streamlit.md) | 📝 proposta (da pianificare dopo M4) | da scrivere |
+| M4b | [Frontend Streamlit, fase 2: veste grafica](M4b-veste-grafica-streamlit.md) | 🔄 piano scritto, in attesa di via libera | [Veste grafica](../superpowers/plans/2026-10-15-streamlit-veste-grafica.md) |
 | M5 | [Rifinitura e pubblicazione](M5-rifinitura-e-pubblicazione.md) | 🔄 quasi completata (manca M5.5: rendere pubblico il repository) | Task 7 + extra |
 
 ## Legenda
