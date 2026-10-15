@@ -1,18 +1,19 @@
 # Milestone del progetto Serie A BI
 
-Aggiornato al 2026-10-05. Ogni milestone ha il suo file con le task, spuntate quando sono finite. Il dettaglio tecnico di ogni task (codice, comandi, test) è nel piano: [`../superpowers/plans/2026-10-05-serie-a-bi.md`](../superpowers/plans/2026-10-05-serie-a-bi.md). La spiegazione di ciò che è stato fatto è in [`../spiegazioni/`](../spiegazioni/).
+Aggiornato al 2026-10-15. Ogni milestone ha il suo file con le task, spuntate quando sono finite. Il dettaglio tecnico di ogni task (codice, comandi, test) è nei piani in [`../superpowers/plans/`](../superpowers/plans/). La spiegazione di ciò che è stato fatto è in [`../spiegazioni/`](../spiegazioni/).
 
-| # | Milestone | Stato | Task del piano |
+| # | Milestone | Stato | Piano |
 |---|---|---|---|
-| M1 | [Fondamenta](M1-fondamenta.md) | ✅ completata | Task 1 |
+| M1 | [Fondamenta](M1-fondamenta.md) | ✅ completata | [Serie A BI](../superpowers/plans/2026-10-05-serie-a-bi.md) Task 1 |
 | M2 | [Pipeline dati (ETL)](M2-pipeline-dati.md) | ✅ completata | Task 2–5 |
 | M3 | [Dashboard Power BI](M3-dashboard-power-bi.md) | ✅ completata | Task 6 |
-| M4 | [Frontend Streamlit](M4-frontend-streamlit.md) | 📝 proposta, da approvare | nuovo (da aggiungere al piano) |
-| M5 | [Rifinitura e pubblicazione](M5-rifinitura-e-pubblicazione.md) | ⏳ da fare | Task 7 + extra |
+| M4 | [Frontend Streamlit, fase 1: funzionale](M4-frontend-streamlit.md) | 🔄 piano scritto, in attesa di via libera | [Streamlit](../superpowers/plans/2026-10-08-streamlit-frontend.md) |
+| M4b | [Frontend Streamlit, fase 2: veste grafica](M4b-veste-grafica-streamlit.md) | 📝 proposta (da pianificare dopo M4) | da scrivere |
+| M5 | [Rifinitura e pubblicazione](M5-rifinitura-e-pubblicazione.md) | 🔄 quasi completata (manca M5.5: rendere pubblico il repository) | Task 7 + extra |
 
 ## Legenda
 - ✅ completata · 🔄 in corso · 📝 proposta · ⏳ da fare
 - `[x]` task finita · `[ ]` task da fare
 
 ## Ordine di lavoro
-M1 → M2 → M3 → M4 → M5. M3 e M4 non dipendono l'una dall'altra (leggono entrambe lo stesso database MySQL): si possono scambiare o alternare.
+M1 → M2 → M3 → M4 → M4b → M5. M5.5 (rendere pubblico il repository) conviene farlo **dopo** M4/M4b, così il repository pubblico contiene tutto. Il riferimento grafico per M4b è il [mockup](../design/README.md): i suoi numeri sono inventati, vale solo come aspetto.
