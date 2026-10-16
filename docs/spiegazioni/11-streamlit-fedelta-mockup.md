@@ -34,6 +34,18 @@ Il menu predefinito di Streamlit è nascosto (`st.navigation(..., position="hidd
 5. **Pagina d'errore (database spento)**: il riquadro rosso aveva poco contrasto sul nuovo sfondo scuro; ora è bianco con testo scuro e il CSS viene caricato prima del controllo.
 6. **Un errore mio nella verifica**: avevo rimpicciolito la pagina con lo zoom CSS per vederla intera, ma Plotly misura le schede già rimpicciolite e disegnava i grafici troppo piccoli, facendomi credere a un difetto che non c'era. Lezione: lo strumento con cui verifichi può falsare quello che vedi; se un risultato è strano, controlla i valori reali (`getBoundingClientRect`, ecc.) prima di correggere il codice.
 
+## Un bug trovato dall'utente (e corretto): la sidebar che non si riapriva
+Dopo la consegna, usando l'app, l'autore ha **chiuso la sidebar** e **non poteva più riaprirla**. Causa mia: per togliere la barra superiore di Streamlit (Deploy e menu) avevo nascosto con il CSS l'intera intestazione (`header`), ma **il pulsante che riapre la sidebar sta proprio dentro quell'intestazione**. Nella verifica visiva non l'avevo notato perché non avevo mai provato a chiudere la sidebar: avevo guardato solo come appariva, non come si usava.
+
+**Correzione** (con test scritti prima che riproducevano il bug):
+- L'intestazione non si nasconde più: diventa **trasparente** e non intercetta i clic (`pointer-events: none`), così non copre il selettore della stagione che sta sotto.
+- Si nascondono solo i pulsanti **Deploy e menu** (`stToolbarActions`).
+- Il pulsante che riapre la sidebar (`stExpandSidebarButton`) riceve un colore chiaro e un fondo leggero (prima era scuro su scuro, quindi invisibile) e `pointer-events: auto` per restare cliccabile.
+- Un test controlla che nessuna regola nasconda l'intestazione o la barra degli strumenti.
+Verificato nel browser con clic veri: la sidebar si chiude, il pulsante `»` compare in alto a sinistra e la riapre; il menu a tendina della stagione continua a funzionare.
+
+**Cosa imparare:** una verifica visiva non basta, serve anche una verifica **d'uso**: provare le interazioni (chiudere, riaprire, selezionare), non solo guardare la pagina ferma. E quando si nasconde un elemento di una libreria, controllare cosa contiene.
+
 ## Cosa è rimasto diverso dal mockup (consapevolmente)
 - **Icone:** emoji in cerchi colorati, non le icone disegnate del mockup.
 - **Intestazione:** gradienti e un triangolo in CSS al posto dell'immagine di stadio.
@@ -46,7 +58,7 @@ Il menu predefinito di Streamlit è nascosto (`st.navigation(..., position="hidd
 .\.venv\Scripts\Activate.ps1
 docker compose up -d --wait
 python -m streamlit run app/main.py     # http://localhost:8501
-python -m pytest                        # 96 test
+python -m pytest                        # 99 test
 ```
 
 ## Cose rimandate (impatto basso)

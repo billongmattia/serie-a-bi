@@ -90,7 +90,7 @@ Si apre su <http://localhost:8501> (Home, Classifica, Squadra, Confronti tra sta
 ```
 
 ## Qualità e test
-- **96 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 67 sull'app (query su un mini-campionato con risultati calcolati a mano, formati italiani, componenti HTML con protezione dall'iniezione di codice, grafici, connessione al database, menu laterale e rendering delle 7 pagine, configurazione solo locale).
+- **99 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 70 sull'app (query su un mini-campionato con risultati calcolati a mano, formati italiani, componenti HTML con protezione dall'iniezione di codice, grafici, connessione al database, menu laterale e rendering delle 7 pagine, configurazione solo locale).
 - Controlli SQL dopo ogni caricamento: ogni stagione è un **girone completo** (partite = squadre × (squadre − 1): 380 con 20 squadre), due righe di fatto per partita, punti e gol coerenti, **riconciliazione** con i punti ufficiali dei campioni (Juventus 2016/17: 91; Inter 2023/24: 94).
 - Gli errori non previsti dell'ETL finiscono in `logs/etl.log` e il programma esce con codice 1.
 

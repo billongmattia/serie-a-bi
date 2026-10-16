@@ -2,7 +2,11 @@ CSS = """
 <style>
 /* sfondo e struttura generale */
 .stApp { background: radial-gradient(900px 420px at 78% -8%, rgba(37,99,235,.45), transparent 60%), linear-gradient(180deg, #07122B 0%, #0A1A3A 100%); }
-header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
+/* Si nascondono solo Deploy e menu. L'intestazione resta (trasparente) perché contiene il pulsante che riapre la sidebar. */
+[data-testid="stToolbarActions"], [data-testid="stMainMenu"], #MainMenu, footer { display: none !important; }
+header[data-testid="stHeader"] { background: transparent !important; pointer-events: none; }
+[data-testid="stExpandSidebarButton"] { color: #E8EEFC !important; background: rgba(255,255,255,.1); border-radius: 8px; pointer-events: auto; }
+[data-testid="stExpandSidebarButton"] * { color: #E8EEFC !important; }
 .block-container { max-width: 1180px; padding-top: 1.2rem; padding-bottom: 2rem; }
 
 /* avvisi (errori, avvertenze) leggibili sia sullo sfondo scuro sia sul pannello bianco */
