@@ -6,11 +6,11 @@ from streamlit.testing.v1 import AppTest
 from app import db
 
 PAGES = {
+    "home": "from app.views import home\nhome.render()",
     "classifica": "from app.views import classifica\nclassifica.render()",
     "squadra": "from app.views import squadra\nsquadra.render()",
     "confronti": "from app.views import confronti\nconfronti.render()",
     "disciplina": "from app.views import disciplina\ndisciplina.render()",
-    "home": "from app.views import home\nhome.render()",
     "insight": "from app.views import insight\ninsight.render()",
     "about": "from app.views import about\nabout.render()",
 }
@@ -20,6 +20,10 @@ PAGES = {
 def use_test_warehouse(monkeypatch, warehouse):
     monkeypatch.setattr("app.db.get_engine", lambda: warehouse)
     st.cache_data.clear()
+
+
+def page_html(at) -> str:
+    return " ".join(m.value for m in at.markdown)
 
 
 def test_check_connection_true_for_a_working_engine(warehouse):
@@ -32,47 +36,57 @@ def test_check_connection_false_for_an_unreachable_database(tmp_path):
 
 
 @pytest.mark.parametrize("name", list(PAGES))
-def test_page_renders_without_exceptions(name):
+def test_page_renders_without_exceptions_and_with_the_hero(name):
     at = AppTest.from_string(PAGES[name]).run(timeout=30)
     assert not at.exception
+    html = page_html(at)
+    assert "SERIE A" in html and "ANALYTICS" in html  # intestazione del mockup
 
 
-def test_classifica_shows_the_standings_table():
-    at = AppTest.from_string(PAGES["classifica"]).run(timeout=30)
-    assert len(at.dataframe) >= 1
-
-
-def test_squadra_shows_five_metrics_and_two_tabs():
-    at = AppTest.from_string(PAGES["squadra"]).run(timeout=30)
-    assert not at.exception
-    assert len(at.metric) == 5
-    assert len(at.tabs) == 2
-
-
-def test_home_shows_four_kpis_and_the_champions():
+def test_home_shows_kpis_and_champions_table():
     at = AppTest.from_string(PAGES["home"]).run(timeout=30)
-    assert not at.exception
-    assert len(at.metric) == 4
-    assert list(at.dataframe[0].value["Campione"]) == ["A", "A"]
+    html = page_html(at)
+    assert "Stagioni" in html and "Partite" in html and "Squadre" in html
+    assert "Campioni stagione per stagione" in html
+    assert html.count(">A</td>") == 2  # il campione è A in entrambe le stagioni di prova
 
 
-def test_disciplina_shows_three_kpis_and_three_tabs():
-    at = AppTest.from_string(PAGES["disciplina"]).run(timeout=30)
-    assert not at.exception
-    assert len(at.metric) == 3
-    assert len(at.tabs) == 3
+def test_squadra_shows_selectors_kpis_tabs_and_recent_matches():
+    at = AppTest.from_string(PAGES["squadra"]).run(timeout=30)
+    html = page_html(at)
+    assert len(at.selectbox) == 2  # Stagione e Squadra, nell'intestazione
+    assert len(at.tabs) == 2
+    assert "Punti" in html and "1° posto" in html and "Ultime 5 partite" in html
+    assert 'class="badge w">V<' in html  # A batte B nel 2017/18
 
 
-def test_confronti_has_a_period_selector():
+def test_confronti_has_a_period_selector_and_four_chart_cards():
     at = AppTest.from_string(PAGES["confronti"]).run(timeout=30)
-    assert not at.exception
+    html = page_html(at)
     assert len(at.select_slider) == 1
+    for title in ("Gol per partita", "Vittorie in casa", "Cartellini gialli per partita", "Cartellini rossi per partita"):
+        assert title in html
 
 
-def test_classifica_shows_five_kpis_and_the_form_column():
+def test_disciplina_has_three_tabs_and_three_delta_cards():
+    at = AppTest.from_string(PAGES["disciplina"]).run(timeout=30)
+    html = page_html(at)
+    assert len(at.tabs) == 3
+    assert len(at.selectbox) == 1
+    assert html.count('class="kpi-delta') == 3
+    assert "Totale falli stagione" in html
+
+
+def test_insight_and_about_render_inside_the_panel():
+    for name, marker in (("insight", "INSIGHT"), ("about", "ABOUT")):
+        at = AppTest.from_string(PAGES[name]).run(timeout=30)
+        assert marker in page_html(at)
+
+
+def test_classifica_shows_kpis_table_and_form_dots():
     at = AppTest.from_string(PAGES["classifica"]).run(timeout=30)
-    assert not at.exception
-    assert len(at.metric) == 5
-    table = at.dataframe[0].value
-    assert list(table["Squadra"]) == ["A", "B"]
-    assert list(table["Ultime 5"]) == ["🟢", "🔴"]
+    html = page_html(at)
+    assert "CLASSIFICA" in html and "Partite giocate" in html
+    assert ">Pos<" in html and ">A</td>" in html and ">B</td>" in html
+    assert 'class="dot w"' in html and 'class="dot l"' in html
+    assert len(at.selectbox) == 1  # il selettore della stagione sta nell'intestazione

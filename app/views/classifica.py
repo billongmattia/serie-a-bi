@@ -4,24 +4,28 @@ from app import data, ui
 
 
 def render():
-    ui.hero("Classifica", "Posizioni, punti e forma delle squadre nella stagione selezionata")
-    season = st.selectbox("Stagione", data.seasons(), key="classifica_stagione")
+    seasons = data.seasons()
+    (season_col,) = ui.hero(ui.dataset_line(seasons, data.dataset()), selectors=1)
+    season = season_col.selectbox("Stagione", seasons, key="classifica_stagione")
     table = data.standings(season)
     overview = data.overview(season)
-    if table.empty or overview is None:
-        st.warning("Nessuna partita per questa stagione.")
-        return
-    matches = overview["partite"]
-    cols = st.columns(5)
-    ui.kpi(cols[0], "Partite giocate", ui.fmt_number(matches))
-    ui.kpi(cols[1], "Gol totali", ui.fmt_number(overview["gol"]),
-           note=f"{ui.fmt_number(overview['gol_a_partita'], 2)} per partita")
-    ui.kpi(cols[2], "Vittorie in casa", ui.fmt_number(overview["vittorie_casa"]),
-           note=ui.fmt_percent(overview["vittorie_casa"] / matches))
-    ui.kpi(cols[3], "Pareggi", ui.fmt_number(overview["pareggi"]),
-           note=ui.fmt_percent(overview["pareggi"] / matches))
-    ui.kpi(cols[4], "Vittorie in trasferta", ui.fmt_number(overview["vittorie_trasferta"]),
-           note=ui.fmt_percent(overview["vittorie_trasferta"] / matches))
-    form = data.form(season, 5).set_index("Squadra")["Forma"]
-    table = table.assign(**{"Ultime 5": table["Squadra"].map(form).fillna("").map(ui.form_dots)})
-    st.dataframe(table, hide_index=True)
+    with ui.panel():
+        ui.show(ui.panel_title_html("CLASSIFICA", "Posizioni, punti e forma delle squadre nella stagione selezionata"))
+        if table.empty or overview is None:
+            st.warning("Nessuna partita per questa stagione.")
+            return
+        matches = overview["partite"]
+        ui.show(ui.kpi_row_html([
+            ui.kpi_html("🏆", "Partite giocate", ui.fmt_number(matches), tone="yellow"),
+            ui.kpi_html("⚽", "Gol totali", ui.fmt_number(overview["gol"]),
+                        note=f"{ui.fmt_number(overview['gol_a_partita'], 2)} per partita", tone="blue"),
+            ui.kpi_html("🏠", "Vittorie casa", ui.fmt_number(overview["vittorie_casa"]),
+                        note=ui.fmt_percent(overview["vittorie_casa"] / matches), tone="green"),
+            ui.kpi_html("⚖️", "Pareggi", ui.fmt_number(overview["pareggi"]),
+                        note=ui.fmt_percent(overview["pareggi"] / matches), tone="grey"),
+            ui.kpi_html("✈️", "Vittorie trasferta", ui.fmt_number(overview["vittorie_trasferta"]),
+                        note=ui.fmt_percent(overview["vittorie_trasferta"] / matches), tone="blue"),
+        ]))
+        form = data.form(season, 5).set_index("Squadra")["Forma"]
+        table = table.assign(**{"Ultime 5": table["Squadra"].map(form).fillna("")})
+        ui.show(ui.standings_html(table))

@@ -20,19 +20,20 @@ if not db.check_connection(db.get_engine()):
 ui.inject_css()
 
 pages = [
-    st.Page(home.render, title="Home", default=True),
-    st.Page(classifica.render, title="Classifica", url_path="classifica"),
-    st.Page(squadra.render, title="Squadra", url_path="squadra"),
-    st.Page(confronti.render, title="Confronti tra stagioni", url_path="confronti"),
-    st.Page(disciplina.render, title="Disciplina e gioco duro", url_path="disciplina"),
-    st.Page(insight.render, title="Insight", url_path="insight"),
-    st.Page(about.render, title="About", url_path="about"),
+    st.Page(home.render, title="Home", icon=":material/home:", default=True),
+    st.Page(classifica.render, title="Classifica", icon=":material/format_list_numbered:", url_path="classifica"),
+    st.Page(squadra.render, title="Squadra", icon=":material/sports_soccer:", url_path="squadra"),
+    st.Page(confronti.render, title="Confronti tra stagioni", icon=":material/bar_chart:", url_path="confronti"),
+    st.Page(disciplina.render, title="Disciplina", icon=":material/flag:", url_path="disciplina"),
+    st.Page(insight.render, title="Insight", icon=":material/lightbulb:", url_path="insight"),
+    st.Page(about.render, title="About", icon=":material/info:", url_path="about"),
 ]
-navigation = st.navigation(pages)
+navigation = st.navigation(pages, position="hidden")
 
-overview = data.dataset()
-st.sidebar.caption(
-    f"Database: {overview['stagioni']} stagioni, {ui.fmt_number(overview['partite'])} partite, "
-    f"{overview['squadre']} squadre, {ui.fmt_number(overview['osservazioni'])} osservazioni"
-)
+with st.sidebar:
+    ui.show(ui.logo_html())
+    for page in pages:
+        st.page_link(page)
+    ui.show(ui.sidebar_footer_html(data.seasons(), data.dataset()))
+
 navigation.run()

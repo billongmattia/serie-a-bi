@@ -1,24 +1,19 @@
+from html import escape
+
 import streamlit as st
 
-DOTS = {"W": "🟢", "D": "⚪", "L": "🔴"}
+from app.styles import CSS
 
-CSS = """
-<style>
-.hero {
-    background: linear-gradient(120deg, #0B1730 0%, #1D4ED8 100%);
-    padding: 1.2rem 1.5rem;
-    border-radius: 12px;
-    margin-bottom: 1rem;
-}
-.hero h1 { margin: 0; padding: 0; font-size: 2rem; letter-spacing: 0.02em; text-transform: uppercase; }
-.hero p { margin: 0.2rem 0 0 0; opacity: 0.85; }
-</style>
-"""
+RESULT_CLASS = {"W": "w", "D": "d", "L": "l"}
+RESULT_BADGE = {"W": "V", "D": "N", "L": "P"}
 
 
-def form_dots(results: str) -> str:
-    """Forma recente: 'WDL' diventa pallini colorati (la partita più vecchia a sinistra)."""
-    return "".join(DOTS.get(r, "") for r in results)
+class Html(str):
+    """Testo HTML fidato: non viene protetto di nuovo. Si crea solo dentro questo modulo."""
+
+
+def esc(value) -> str:
+    return escape(str(value), quote=True)
 
 
 def fmt_number(value, decimals: int = 0) -> str:
@@ -42,21 +37,128 @@ def pct_change(new, old):
     return (new - old) / old
 
 
-def kpi(container, label: str, value: str, note: str | None = None, change: float | None = None) -> None:
-    """Scheda numerica. `note`: riga grigia sotto il valore; `change`: variazione con freccia."""
-    if change is not None:
-        delta = fmt_signed_percent(change) + (f" {note}" if note else "")
-        container.metric(label, value, delta=delta, delta_color="off", border=True)
-    elif note is not None:
-        container.metric(label, value, delta=note, delta_color="off", delta_arrow="off", border=True)
-    else:
-        container.metric(label, value, border=True)
+def _cell(value) -> str:
+    return str(value) if isinstance(value, Html) else esc(value)
 
 
-def hero(title: str, subtitle: str) -> None:
-    # Solo testi fissi scritti nel codice: mai valori letti dal database.
-    st.markdown(f'<div class="hero"><h1>{title}</h1><p>{subtitle}</p></div>', unsafe_allow_html=True)
+def kpi_html(icon, label, value, note=None, tone="blue", delta=None, delta_good=True) -> str:
+    note_html = f'<div class="kpi-note">{esc(note)}</div>' if note else ""
+    delta_class = "good" if delta_good else "bad"
+    delta_html = f'<div class="kpi-delta {delta_class}">{esc(delta)}</div>' if delta else ""
+    return (
+        f'<div class="kpi"><div class="kpi-icon {esc(tone)}">{esc(icon)}</div>'
+        f'<div class="kpi-body"><div class="kpi-label">{esc(label)}</div>'
+        f'<div class="kpi-value">{esc(value)}</div>{note_html}{delta_html}</div></div>'
+    )
+
+
+def kpi_row_html(cards: list[str]) -> str:
+    return '<div class="kpi-row">' + "".join(cards) + "</div>"
+
+
+def card_title_html(icon: str, text: str) -> str:
+    return f'<div class="card-title"><span>{esc(icon)}</span><span>{esc(text)}</span></div>'
+
+
+def panel_title_html(title: str, subtitle: str = "") -> str:
+    sub = f'<div class="panel-sub">{esc(subtitle)}</div>' if subtitle else ""
+    return f'<div class="panel-title">{esc(title)}</div>{sub}'
+
+
+def table_html(headers: list[str], rows: list[list], align: list[str] | None = None) -> str:
+    align = align or ["" for _ in headers]
+    head = "".join(f'<th class="{a}">{esc(h)}</th>' for h, a in zip(headers, align))
+    body = "".join(
+        "<tr>" + "".join(f'<td class="{a}">{_cell(c)}</td>' for c, a in zip(row, align)) + "</tr>"
+        for row in rows
+    )
+    return f'<table class="tbl"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>'
+
+
+def dots_html(results: str) -> Html:
+    dots = "".join(
+        f'<span class="dot {RESULT_CLASS[r]}"></span>' for r in results if r in RESULT_CLASS
+    )
+    return Html(f'<span class="dots">{dots}</span>' if dots else "")
+
+
+def standings_html(df) -> str:
+    headers = ["Pos", "Squadra", "G", "V", "N", "P", "GF", "GS", "DR", "Punti", "Ultime 5"]
+    align = ["num pos", "", "num", "num", "num", "num", "num", "num", "num", "num pos", ""]
+    rows = []
+    for _, r in df.iterrows():
+        diff = int(r["Diff Reti"])
+        rows.append([
+            int(r["Posizione"]), r["Squadra"], int(r["Partite"]), int(r["Vittorie"]),
+            int(r["Pareggi"]), int(r["Sconfitte"]), int(r["Gol Fatti"]), int(r["Gol Subiti"]),
+            f"{diff:+d}" if diff else "0", int(r["Punti"]), dots_html(r["Ultime 5"]),
+        ])
+    return table_html(headers, rows, align)
+
+
+def recent_matches_html(team: str, df) -> str:
+    rows = []
+    for _, r in df.iterrows():
+        cls = RESULT_CLASS.get(r["Risultato"], "d")
+        badge = RESULT_BADGE.get(r["Risultato"], "N")
+        rows.append(
+            f'<div class="match-row {cls}"><span>{esc(team)}</span>'
+            f'<span class="match-score">{esc(int(r["Gol fatti"]))} - {esc(int(r["Gol subiti"]))}</span>'
+            f'<span>{esc(r["Avversario"])}</span><span class="badge {cls}">{badge}</span></div>'
+        )
+    return "".join(rows)
+
+
+def logo_html() -> str:
+    return '<div class="logo"><span class="l1">SERIE A</span><span class="l2">ANALYTICS</span></div>'
+
+
+def sidebar_footer_html(seasons: list[str], overview: dict) -> str:
+    span = f"{seasons[-1]} – {seasons[0]}" if seasons else ""
+    lines = [
+        "Stagioni nel database",
+        span,
+        f"{fmt_number(overview['partite'])} partite",
+        f"{fmt_number(overview['osservazioni'])} osservazioni",
+        f"{overview['squadre']} squadre",
+    ]
+    body = "<br>".join(esc(line) for line in lines)
+    return f'<div class="tricolor"></div><div class="side-foot">{body}</div>'
+
+
+def dataset_line(seasons: list[str], overview: dict) -> str:
+    span = f"{seasons[-1]} – {seasons[0]}" if seasons else ""
+    return (
+        f"{overview['stagioni']} stagioni • {span} • "
+        f"{fmt_number(overview['partite'])} partite • {overview['squadre']} squadre"
+    )
+
+
+def hero_title_html(subtitle: str) -> str:
+    return (
+        '<div class="hero-kicker">LA SERIE A IN NUMERI!</div>'
+        '<div class="hero-title">SERIE A <span>ANALYTICS</span></div>'
+        f'<p class="hero-sub">{esc(subtitle)}</p>'
+    )
 
 
 def inject_css() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
+
+
+def show(html: str) -> None:
+    st.markdown(html, unsafe_allow_html=True)
+
+
+def hero(subtitle: str, selectors: int = 0) -> list:
+    """Intestazione con i selettori a destra. Restituisce le colonne dei selettori."""
+    with st.container(key="hero"):
+        columns = st.columns([3] + [1] * selectors) if selectors else st.columns([1])
+        with columns[0]:
+            show(hero_title_html(subtitle))
+    return list(columns[1:])
+
+
+def panel():
+    """Pannello bianco dei contenuti: da usare con `with ui.panel():`."""
+    return st.container(key="panel")

@@ -9,17 +9,20 @@ def rgba(hex_color: str, alpha: float) -> str:
     return f"rgba({r},{g},{b},{alpha})"
 
 
-def _style(fig, height: int = 320):
+def _style(fig, height: int = 320, legend: bool = False):
     fig.update_layout(
-        template="plotly_dark",
+        template="plotly_white",
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=theme.INK),
         height=height,
-        margin=dict(l=10, r=30, t=50, b=10),
-        title_font_size=16,
-        legend_title_text="",
+        margin=dict(l=10, r=30, t=30, b=10),
+        showlegend=legend,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, title_text=""),
         separators=",.",  # formato italiano: virgola decimale, punto per le migliaia
     )
+    fig.update_xaxes(showgrid=False, linecolor=theme.LINE)
+    fig.update_yaxes(gridcolor=theme.LINE, zeroline=False)
     return fig
 
 
@@ -34,12 +37,17 @@ def _padded_range(values, low_pad: float = 0.6, high_pad: float = 0.4):
     return [axis_low, high + span * high_pad]
 
 
-def area_chart(df, x, y, title, color=theme.BLUE, fmt=".2f"):
-    fig = px.line(df, x=x, y=y, title=title, markers=True, text=y)
+def area_chart(df, x, y, color=theme.BLUE, fmt=".2f"):
+    fig = px.line(df, x=x, y=y, markers=True, text=y)
     fig.update_traces(
         fill="tozeroy",
+        fillgradient=dict(
+            type="vertical",
+            colorscale=[[0, rgba(color, 0.04)], [1, rgba(color, 0.35)]],
+        ),
         line_color=color,
-        fillcolor=rgba(color, 0.25),
+        line_width=2.5,
+        marker_size=7,
         textposition="top center",
         texttemplate="%{text:" + fmt + "}",
         cliponaxis=False,
@@ -48,9 +56,9 @@ def area_chart(df, x, y, title, color=theme.BLUE, fmt=".2f"):
     return _style(fig)
 
 
-def hbar_chart(df, x, y, title, color=theme.BLUE, fmt=".2f", height=None):
+def hbar_chart(df, x, y, color=theme.BLUE, fmt=".2f", height=None):
     height = height or max(320, 26 * len(df) + 90)
-    fig = px.bar(df, x=x, y=y, orientation="h", title=title, text=x)
+    fig = px.bar(df, x=x, y=y, orientation="h", text=x)
     fig.update_traces(
         marker_color=color,
         texttemplate="%{text:" + fmt + "}",
@@ -62,11 +70,11 @@ def hbar_chart(df, x, y, title, color=theme.BLUE, fmt=".2f", height=None):
     return _style(fig, height)
 
 
-def grouped_bar(df, x, ys, title, colors=None):
+def grouped_bar(df, x, ys, colors=None):
     colors = colors or [theme.BLUE, theme.RED]
     fig = px.bar(
-        df, x=x, y=ys, barmode="group", title=title,
+        df, x=x, y=ys, barmode="group",
         color_discrete_sequence=colors, text_auto=True,
         labels={"value": "", "variable": ""},
     )
-    return _style(fig)
+    return _style(fig, legend=True)

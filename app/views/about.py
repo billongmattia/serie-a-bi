@@ -23,5 +23,7 @@ Codice e documentazione: repository GitHub `billongmattia/serie-a-bi`.
 
 
 def render():
-    ui.hero("About", "Il progetto in breve")
-    st.markdown(ABOUT)
+    ui.hero("Il progetto in breve")
+    with ui.panel():
+        ui.show(ui.panel_title_html("ABOUT", "Il progetto in breve"))
+        st.markdown(ABOUT)
