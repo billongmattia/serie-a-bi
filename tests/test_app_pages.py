@@ -39,6 +39,17 @@ def test_classifica_shows_the_standings_table():
     assert len(at.dataframe) >= 1
 
 
-def test_squadra_shows_four_metrics():
+def test_squadra_shows_five_metrics_and_two_tabs():
     at = AppTest.from_string(PAGES["squadra"]).run(timeout=30)
-    assert len(at.metric) == 4
+    assert not at.exception
+    assert len(at.metric) == 5
+    assert len(at.tabs) == 2
+
+
+def test_classifica_shows_five_kpis_and_the_form_column():
+    at = AppTest.from_string(PAGES["classifica"]).run(timeout=30)
+    assert not at.exception
+    assert len(at.metric) == 5
+    table = at.dataframe[0].value
+    assert list(table["Squadra"]) == ["A", "B"]
+    assert list(table["Ultime 5"]) == ["🟢", "🔴"]
