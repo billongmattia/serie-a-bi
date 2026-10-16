@@ -41,15 +41,16 @@ def render():
                 ui.show(ui.card_title_html("👟", "Falli commessi a partita per squadra"))
                 st.plotly_chart(charts.hbar_chart(
                     table.sort_values("Falli a Partita"), "Falli a Partita", "Squadra", color=theme.BLUE))
-            with right, st.container(border=True):
-                ui.show(ui.card_title_html("📈", "Andamento falli per partita"))
-                st.plotly_chart(charts.area_chart(
-                    trends, "Stagione", "Falli a Partita", color=theme.BLUE, fmt=".1f"))
-            ui.show(ui.kpi_row_html([
-                card("👟", "Totale falli stagione", "falli", "Falli a Partita", "grey"),
-                card("🟨", "Cartellini gialli", "gialli", "Gialli a Partita", "yellow"),
-                card("🟥", "Cartellini rossi", "rossi", "Rossi a Partita", "red"),
-            ]))
+            with right:
+                with st.container(border=True):
+                    ui.show(ui.card_title_html("📈", "Andamento falli per partita"))
+                    st.plotly_chart(charts.area_chart(
+                        trends, "Stagione", "Falli a Partita", color=theme.BLUE, fmt=".1f"))
+                ui.show(ui.kpi_row_html([
+                    card("👟", "Totale falli stagione", "falli", "Falli a Partita", "grey"),
+                    card("🟨", "Cartellini gialli", "gialli", "Gialli a Partita", "yellow"),
+                    card("🟥", "Cartellini rossi", "rossi", "Rossi a Partita", "red"),
+                ]))
         with fouls_tab:
             with st.container(border=True):
                 ui.show(ui.card_title_html("🛡️", "Falli subiti a partita per squadra"))

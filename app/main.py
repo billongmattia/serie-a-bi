@@ -9,6 +9,7 @@ from app import data, db, ui  # noqa: E402
 from app.views import about, classifica, confronti, disciplina, home, insight, squadra  # noqa: E402
 
 st.set_page_config(page_title="Serie A BI", layout="wide")
+ui.inject_css()
 
 if not db.check_connection(db.get_engine()):
     st.error(
@@ -16,8 +17,6 @@ if not db.check_connection(db.get_engine()):
         "e ricarica la pagina."
     )
     st.stop()
-
-ui.inject_css()
 
 pages = [
     st.Page(home.render, title="Home", icon=":material/home:", default=True),
@@ -33,7 +32,8 @@ navigation = st.navigation(pages, position="hidden")
 with st.sidebar:
     ui.show(ui.logo_html())
     for page in pages:
-        st.page_link(page)
+        with st.container(key=ui.nav_container_key(page.url_path, navigation.url_path)):
+            st.page_link(page)
     ui.show(ui.sidebar_footer_html(data.seasons(), data.dataset()))
 
 navigation.run()

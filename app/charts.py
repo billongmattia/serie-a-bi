@@ -21,8 +21,8 @@ def _style(fig, height: int = 320, legend: bool = False):
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, title_text=""),
         separators=",.",  # formato italiano: virgola decimale, punto per le migliaia
     )
-    fig.update_xaxes(showgrid=False, linecolor=theme.LINE)
-    fig.update_yaxes(gridcolor=theme.LINE, zeroline=False)
+    fig.update_xaxes(showgrid=False, linecolor=theme.LINE, title_text=None, tickangle=0, tickfont_size=10)
+    fig.update_yaxes(gridcolor=theme.LINE, zeroline=False, title_text=None)
     return fig
 
 

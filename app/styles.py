@@ -5,12 +5,16 @@ CSS = """
 header[data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
 .block-container { max-width: 1180px; padding-top: 1.2rem; padding-bottom: 2rem; }
 
+/* avvisi (errori, avvertenze) leggibili sia sullo sfondo scuro sia sul pannello bianco */
+[data-testid="stAlert"] { background: #FFFFFF; border-left: 4px solid #E5484D; border-radius: 10px; }
+[data-testid="stAlert"] * { color: #0F1B3D !important; }
+
 /* sidebar */
 section[data-testid="stSidebar"] { background: #07122B; border-right: 1px solid rgba(255,255,255,.08); }
 section[data-testid="stSidebar"] * { color: #E8EEFC; }
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] { display: none; }
 section[data-testid="stSidebar"] [data-testid="stPageLink-NavLink"] { border-radius: 8px; padding: .45rem .7rem; margin-bottom: .1rem; }
-section[data-testid="stSidebar"] [data-testid="stPageLink-NavLink"][aria-current="page"] { background: #1E5BFF; font-weight: 700; }
+section[data-testid="stSidebar"] .st-key-nav_active [data-testid="stPageLink-NavLink"] { background: #1E5BFF !important; font-weight: 700; }
 .logo { padding: .6rem .4rem 1rem .4rem; line-height: 1; }
 .logo .l1 { display: block; font-size: 1.7rem; font-weight: 900; letter-spacing: .01em; color: #FFFFFF; }
 .logo .l2 { display: block; font-size: 1.7rem; font-weight: 900; letter-spacing: .01em; background: linear-gradient(90deg, #3B82F6, #22A559); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -33,7 +37,7 @@ section[data-testid="stSidebar"] [data-testid="stPageLink-NavLink"][aria-current
 .card-title { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: 1.02rem; color: #0F1B3D; margin: .2rem 0 .4rem 0; }
 
 /* schede KPI */
-.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .8rem; margin-bottom: 1rem; }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: .8rem; margin-bottom: 1rem; }
 .kpi { display: flex; gap: .7rem; align-items: center; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: .75rem .85rem; box-shadow: 0 1px 2px rgba(15,27,61,.05); }
 .kpi-icon { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
 .kpi-icon.blue { background: #E0EAFF; } .kpi-icon.green { background: #DCFCE7; } .kpi-icon.red { background: #FEE2E2; } .kpi-icon.yellow { background: #FEF3C7; } .kpi-icon.grey { background: #F1F5F9; }

@@ -43,6 +43,17 @@ def test_charts_are_light_and_use_italian_separators():
     assert fig.layout.paper_bgcolor == "rgba(0,0,0,0)"
 
 
+def test_charts_have_no_axis_titles_and_horizontal_season_labels():
+    df = pd.DataFrame({"Stagione": ["2016/17", "2017/18"], "Gol a Partita": [2.96, 2.68]})
+    for fig in (
+        charts.area_chart(df, "Stagione", "Gol a Partita"),
+        charts.grouped_bar(df, "Stagione", ["Gol a Partita"]),
+    ):
+        assert fig.layout.xaxis.title.text is None
+        assert fig.layout.yaxis.title.text is None
+        assert fig.layout.xaxis.tickangle == 0
+
+
 def test_hbar_chart_leaves_room_for_the_value_labels():
     df = pd.DataFrame({"Squadra": ["A", "B"], "Gialli": [1.0, 2.0]})
     fig = charts.hbar_chart(df, "Gialli", "Squadra")

@@ -11,7 +11,7 @@ Progetto da portfolio di **Mattia Billong**, studente ITS Business Intelligence 
 - Li carica in **MySQL** (Docker) in modo **ripetibile**: l'ETL si può rilanciare senza duplicare i dati.
 - Controlla la **qualità dei dati** (ogni stagione è un girone completo, punti dei campioni riconciliati con le classifiche ufficiali).
 - Li mostra in una **dashboard Power BI** a 4 pagine: classifica, squadra, confronti tra stagioni, disciplina.
-- Li mostra anche in un'**app web Streamlit** (tema scuro, schede KPI, grafici Plotly) che legge lo stesso database, con 7 pagine: Home, Classifica (con la forma recente a pallini), Squadra, Confronti tra stagioni, Disciplina, Insight e About.
+- Li mostra anche in un'**app web Streamlit** (pannelli bianchi su cornice blu scuro, schede KPI, grafici Plotly) che legge lo stesso database, con 7 pagine: Home, Classifica (con la forma recente a cerchi), Squadra, Confronti tra stagioni, Disciplina, Insight e About. L'aspetto riprende un [mockup](docs/design/README.md) fornito dall'autore.
 
 ## Architettura
 ```
@@ -90,7 +90,7 @@ Si apre su <http://localhost:8501> (Home, Classifica, Squadra, Confronti tra sta
 ```
 
 ## Qualità e test
-- **83 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 54 sull'app (query su un mini-campionato con risultati calcolati a mano, formati italiani, componenti e grafici, connessione al database, rendering delle 7 pagine, configurazione solo locale).
+- **96 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 67 sull'app (query su un mini-campionato con risultati calcolati a mano, formati italiani, componenti HTML con protezione dall'iniezione di codice, grafici, connessione al database, menu laterale e rendering delle 7 pagine, configurazione solo locale).
 - Controlli SQL dopo ogni caricamento: ogni stagione è un **girone completo** (partite = squadre × (squadre − 1): 380 con 20 squadre), due righe di fatto per partita, punti e gol coerenti, **riconciliazione** con i punti ufficiali dei campioni (Juventus 2016/17: 91; Inter 2023/24: 94).
 - Gli errori non previsti dell'ETL finiscono in `logs/etl.log` e il programma esce con codice 1.
 

@@ -126,6 +126,13 @@ def sidebar_footer_html(seasons: list[str], overview: dict) -> str:
     return f'<div class="tricolor"></div><div class="side-foot">{body}</div>'
 
 
+def nav_container_key(url_path: str, active_url_path: str) -> str:
+    """Chiave del contenitore di una voce del menu: la voce attiva si distingue per il CSS."""
+    if url_path == active_url_path:
+        return "nav_active"
+    return f"nav_{url_path or 'home'}"
+
+
 def dataset_line(seasons: list[str], overview: dict) -> str:
     span = f"{seasons[-1]} – {seasons[0]}" if seasons else ""
     return (

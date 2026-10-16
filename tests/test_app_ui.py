@@ -116,6 +116,13 @@ def test_logo_and_footer_html():
     assert "7.600 osservazioni" in footer and "34 squadre" in footer
 
 
+def test_nav_container_key_marks_only_the_active_page():
+    assert ui.nav_container_key("classifica", "classifica") == "nav_active"
+    assert ui.nav_container_key("squadra", "classifica") == "nav_squadra"
+    assert ui.nav_container_key("", "classifica") == "nav_home"  # la pagina predefinita non ha indirizzo
+    assert ui.nav_container_key("", "") == "nav_active"
+
+
 def test_dataset_line():
     overview = {"stagioni": 10, "partite": 3800, "squadre": 34, "osservazioni": 7600, "gol": 10423}
     line = ui.dataset_line(["2025/26", "2016/17"], overview)

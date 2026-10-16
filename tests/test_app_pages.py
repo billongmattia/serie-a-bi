@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from streamlit.testing.v1 import AppTest
 
 from app import db
+from etl import config
 
 PAGES = {
     "home": "from app.views import home\nhome.render()",
@@ -41,6 +42,14 @@ def test_page_renders_without_exceptions_and_with_the_hero(name):
     assert not at.exception
     html = page_html(at)
     assert "SERIE A" in html and "ANALYTICS" in html  # intestazione del mockup
+
+
+def test_main_builds_the_sidebar_with_logo_and_database_summary():
+    at = AppTest.from_file(str(config.ROOT / "app" / "main.py")).run(timeout=60)
+    assert not at.exception
+    sidebar = " ".join(m.value for m in at.sidebar.markdown)
+    assert "ANALYTICS" in sidebar
+    assert "Stagioni nel database" in sidebar and "3 squadre" in sidebar
 
 
 def test_home_shows_kpis_and_champions_table():

@@ -9,7 +9,7 @@ Aggiornato al 2026-10-15. Ogni milestone ha il suo file con le task, spuntate qu
 | M3 | [Dashboard Power BI](M3-dashboard-power-bi.md) | ✅ completata | Task 6 |
 | M4 | [Frontend Streamlit, fase 1: funzionale](M4-frontend-streamlit.md) | ✅ completata | [Streamlit](../superpowers/plans/2026-10-08-streamlit-frontend.md) |
 | M4b | [Frontend Streamlit, fase 2: veste grafica](M4b-veste-grafica-streamlit.md) | ✅ completata (screenshot dell'app da fare) | [Veste grafica](../superpowers/plans/2026-10-15-streamlit-veste-grafica.md) |
-| M4c | [Frontend Streamlit, fase 3: stile identico al mockup](M4c-fedelta-mockup.md) | 🔄 piano scritto, in attesa di via libera | [Fedeltà al mockup](../superpowers/plans/2026-10-16-streamlit-fedelta-mockup.md) |
+| M4c | [Frontend Streamlit, fase 3: stile identico al mockup](M4c-fedelta-mockup.md) | ✅ completata (screenshot dell'app da fare) | [Fedeltà al mockup](../superpowers/plans/2026-10-16-streamlit-fedelta-mockup.md) |
 | M5 | [Rifinitura e pubblicazione](M5-rifinitura-e-pubblicazione.md) | 🔄 quasi completata (manca M5.5: rendere pubblico il repository) | Task 7 + extra |
 
 ## Legenda
