@@ -170,3 +170,132 @@ def discipline_by_team(engine, season: str) -> pd.DataFrame:
         "squadra": "Squadra", "falli": "Falli a Partita", "falli_subiti": "Falli Subiti a Partita",
         "gialli": "Gialli a Partita", "rossi": "Rossi a Partita",
     })
+
+
+def season_overview(engine, season: str) -> dict | None:
+    df = _read(
+        engine,
+        """
+        SELECT COUNT(DISTINCT f.match_key) AS partite,
+               SUM(f.goals_for) AS gol,
+               SUM(CASE WHEN f.is_home = 1 AND f.result = 'W' THEN 1 ELSE 0 END) AS vittorie_casa,
+               SUM(CASE WHEN f.is_home = 1 AND f.result = 'D' THEN 1 ELSE 0 END) AS pareggi,
+               SUM(CASE WHEN f.is_home = 1 AND f.result = 'L' THEN 1 ELSE 0 END) AS vittorie_trasferta
+        """ + _FROM_TEAM_MATCH + "WHERE s.label = :season",
+        {"season": season},
+    )
+    row = df.iloc[0]
+    if pd.isna(row["gol"]):
+        return None
+    matches = int(row["partite"])
+    goals = int(row["gol"])
+    return {
+        "partite": matches,
+        "gol": goals,
+        "gol_a_partita": goals / matches,
+        "vittorie_casa": int(row["vittorie_casa"]),
+        "pareggi": int(row["pareggi"]),
+        "vittorie_trasferta": int(row["vittorie_trasferta"]),
+    }
+
+
+def form_by_team(engine, season: str, n: int = 5) -> pd.DataFrame:
+    df = _read(
+        engine,
+        "SELECT t.team_name AS squadra, m.match_key AS chiave, f.result AS risultato "
+        + _FROM_TEAM_MATCH + "WHERE s.label = :season",
+        {"season": season},
+    )
+    rows = []
+    for team, group in df.groupby("squadra"):
+        last = group.sort_values("chiave").tail(n)
+        rows.append({"Squadra": team, "Forma": "".join(last["risultato"])})
+    return pd.DataFrame(rows, columns=["Squadra", "Forma"])
+
+
+def home_away_goals(engine, season: str, team: str) -> pd.DataFrame:
+    df = _read(
+        engine,
+        """
+        SELECT CASE WHEN f.is_home = 1 THEN 'Casa' ELSE 'Trasferta' END AS campo,
+               SUM(f.goals_for) AS fatti, SUM(f.goals_against) AS subiti
+        """ + _FROM_TEAM_MATCH + """
+        WHERE s.label = :season AND t.team_name = :team
+        GROUP BY f.is_home
+        ORDER BY f.is_home DESC
+        """,
+        {"season": season, "team": team},
+    )
+    df = to_numbers(df, ["fatti", "subiti"])
+    df[["fatti", "subiti"]] = df[["fatti", "subiti"]].astype(int)
+    return df.rename(columns={"campo": "Campo", "fatti": "Gol fatti", "subiti": "Gol subiti"})
+
+
+def team_points_by_season(engine, team: str) -> pd.DataFrame:
+    df = _read(
+        engine,
+        """
+        SELECT s.label AS stagione, SUM(f.points) AS punti,
+               SUM(f.goals_for) AS fatti, SUM(f.goals_against) AS subiti
+        """ + _FROM_TEAM_MATCH + "WHERE t.team_name = :team GROUP BY s.label ORDER BY s.label",
+        {"team": team},
+    )
+    df = to_numbers(df, ["punti", "fatti", "subiti"])
+    df[["punti", "fatti", "subiti"]] = df[["punti", "fatti", "subiti"]].astype(int)
+    return df.rename(columns={
+        "stagione": "Stagione", "punti": "Punti", "fatti": "Gol fatti", "subiti": "Gol subiti",
+    })
+
+
+def discipline_totals(engine, season: str) -> dict | None:
+    df = _read(
+        engine,
+        """
+        SELECT COUNT(DISTINCT f.match_key) AS partite, SUM(f.fouls_for) AS falli,
+               SUM(f.yellow_for) AS gialli, SUM(f.red_for) AS rossi
+        """ + _FROM_TEAM_MATCH + "WHERE s.label = :season",
+        {"season": season},
+    )
+    row = df.iloc[0]
+    if pd.isna(row["falli"]):
+        return None
+    return {
+        "partite": int(row["partite"]), "falli": int(row["falli"]),
+        "gialli": int(row["gialli"]), "rossi": int(row["rossi"]),
+    }
+
+
+def dataset_overview(engine) -> dict:
+    df = _read(
+        engine,
+        """
+        SELECT (SELECT COUNT(*) FROM dim_season) AS stagioni,
+               (SELECT COUNT(*) FROM dim_match) AS partite,
+               (SELECT COUNT(*) FROM dim_team) AS squadre,
+               (SELECT COUNT(*) FROM fact_team_match) AS osservazioni,
+               (SELECT SUM(goals_for) FROM fact_team_match) AS gol
+        """,
+    )
+    row = df.iloc[0]
+    return {key: int(row[key]) for key in ("stagioni", "partite", "squadre", "osservazioni", "gol")}
+
+
+def champions(engine) -> pd.DataFrame:
+    df = _read(
+        engine,
+        """
+        SELECT s.label AS stagione, t.team_name AS squadra,
+               SUM(f.points) AS punti, SUM(f.goals_for) - SUM(f.goals_against) AS diff
+        """ + _FROM_TEAM_MATCH + "GROUP BY s.label, t.team_name",
+    )
+    df = to_numbers(df, ["punti", "diff"])
+    df["score"] = df["punti"] * 1000 + df["diff"]
+    best = (
+        df.sort_values(["stagione", "score", "squadra"], ascending=[True, False, True])
+        .groupby("stagione")
+        .head(1)
+        .sort_values("stagione")
+    )
+    out = best[["stagione", "squadra", "punti"]].reset_index(drop=True)
+    out["punti"] = out["punti"].astype(int)
+    return out.rename(columns={"stagione": "Stagione", "squadra": "Campione", "punti": "Punti"})

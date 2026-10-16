@@ -43,3 +43,38 @@ def trends():
 @st.cache_data(ttl=TTL)
 def discipline(season):
     return queries.discipline_by_team(db.get_engine(), season)
+
+
+@st.cache_data(ttl=TTL)
+def overview(season):
+    return queries.season_overview(db.get_engine(), season)
+
+
+@st.cache_data(ttl=TTL)
+def form(season, n=5):
+    return queries.form_by_team(db.get_engine(), season, n)
+
+
+@st.cache_data(ttl=TTL)
+def home_away_goals(season, team):
+    return queries.home_away_goals(db.get_engine(), season, team)
+
+
+@st.cache_data(ttl=TTL)
+def team_history(team):
+    return queries.team_points_by_season(db.get_engine(), team)
+
+
+@st.cache_data(ttl=TTL)
+def discipline_totals(season):
+    return queries.discipline_totals(db.get_engine(), season)
+
+
+@st.cache_data(ttl=TTL)
+def dataset():
+    return queries.dataset_overview(db.get_engine())
+
+
+@st.cache_data(ttl=TTL)
+def champions():
+    return queries.champions(db.get_engine())

@@ -129,3 +129,65 @@ def test_discipline_by_team(warehouse):
     assert by_team.loc["C", "Rossi a Partita"] == pytest.approx(0.25)
     assert by_team.loc["A", "Falli a Partita"] == pytest.approx(12.0)
     assert by_team.loc["A", "Falli Subiti a Partita"] == pytest.approx(12.0)
+
+
+def test_season_overview(warehouse):
+    s = q.season_overview(warehouse, "2016/17")
+    assert (s["partite"], s["gol"]) == (6, 13)
+    assert (s["vittorie_casa"], s["pareggi"], s["vittorie_trasferta"]) == (2, 2, 2)
+    assert s["gol_a_partita"] == pytest.approx(13 / 6)
+    assert q.season_overview(warehouse, "1999/00") is None
+
+
+def test_form_by_team_oldest_to_newest(warehouse):
+    df = q.form_by_team(warehouse, "2016/17")
+    assert list(df.columns) == ["Squadra", "Forma"]
+    assert dict(zip(df["Squadra"], df["Forma"])) == {"A": "WWWD", "B": "LDLL", "C": "DLWD"}
+
+
+def test_form_by_team_limits_to_last_n(warehouse):
+    df = q.form_by_team(warehouse, "2016/17", n=2)
+    assert dict(zip(df["Squadra"], df["Forma"])) == {"A": "WD", "B": "LL", "C": "WD"}
+
+
+def test_form_by_team_empty_for_unknown_season(warehouse):
+    df = q.form_by_team(warehouse, "1999/00")
+    assert df.empty and list(df.columns) == ["Squadra", "Forma"]
+
+
+def test_home_away_goals(warehouse):
+    df = q.home_away_goals(warehouse, "2016/17", "A")
+    assert list(df.columns) == ["Campo", "Gol fatti", "Gol subiti"]
+    by_field = df.set_index("Campo")
+    assert (by_field.loc["Casa", "Gol fatti"], by_field.loc["Casa", "Gol subiti"]) == (3, 1)
+    assert (by_field.loc["Trasferta", "Gol fatti"], by_field.loc["Trasferta", "Gol subiti"]) == (4, 0)
+
+
+def test_team_points_by_season(warehouse):
+    df = q.team_points_by_season(warehouse, "A")
+    assert list(df.columns) == ["Stagione", "Punti", "Gol fatti", "Gol subiti"]
+    assert [tuple(r) for r in df.itertuples(index=False)] == [
+        ("2016/17", 10, 7, 1),
+        ("2017/18", 3, 1, 0),
+    ]
+
+
+def test_discipline_totals(warehouse):
+    t = q.discipline_totals(warehouse, "2016/17")
+    assert t == {"partite": 6, "falli": 144, "gialli": 14, "rossi": 1}
+    assert q.discipline_totals(warehouse, "1999/00") is None
+
+
+def test_dataset_overview(warehouse):
+    assert q.dataset_overview(warehouse) == {
+        "stagioni": 2, "partite": 7, "squadre": 3, "osservazioni": 14, "gol": 14,
+    }
+
+
+def test_champions(warehouse):
+    df = q.champions(warehouse)
+    assert list(df.columns) == ["Stagione", "Campione", "Punti"]
+    assert [tuple(r) for r in df.itertuples(index=False)] == [
+        ("2016/17", "A", 10),
+        ("2017/18", "A", 3),
+    ]
