@@ -10,6 +10,9 @@ PAGES = {
     "squadra": "from app.views import squadra\nsquadra.render()",
     "confronti": "from app.views import confronti\nconfronti.render()",
     "disciplina": "from app.views import disciplina\ndisciplina.render()",
+    "home": "from app.views import home\nhome.render()",
+    "insight": "from app.views import insight\ninsight.render()",
+    "about": "from app.views import about\nabout.render()",
 }
 
 
@@ -44,6 +47,26 @@ def test_squadra_shows_five_metrics_and_two_tabs():
     assert not at.exception
     assert len(at.metric) == 5
     assert len(at.tabs) == 2
+
+
+def test_home_shows_four_kpis_and_the_champions():
+    at = AppTest.from_string(PAGES["home"]).run(timeout=30)
+    assert not at.exception
+    assert len(at.metric) == 4
+    assert list(at.dataframe[0].value["Campione"]) == ["A", "A"]
+
+
+def test_disciplina_shows_three_kpis_and_three_tabs():
+    at = AppTest.from_string(PAGES["disciplina"]).run(timeout=30)
+    assert not at.exception
+    assert len(at.metric) == 3
+    assert len(at.tabs) == 3
+
+
+def test_confronti_has_a_period_selector():
+    at = AppTest.from_string(PAGES["confronti"]).run(timeout=30)
+    assert not at.exception
+    assert len(at.select_slider) == 1
 
 
 def test_classifica_shows_five_kpis_and_the_form_column():

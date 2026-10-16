@@ -1,22 +1,35 @@
-import plotly.express as px
 import streamlit as st
 
-from app import data
+from app import charts, data, theme, ui
 
 
 def render():
-    st.title("Confronti tra stagioni")
+    ui.hero("Confronti tra stagioni", "Principali metriche a confronto nel periodo selezionato")
     trends = data.trends()
     if trends.empty:
         st.warning("Nessun dato disponibile.")
         return
+    labels = trends["Stagione"].tolist()
+    if len(labels) > 1:
+        first, last = st.select_slider(
+            "Periodo", options=labels, value=(labels[0], labels[-1]), key="confronti_periodo"
+        )
+    else:
+        first = last = labels[0]
+    window = trends[(trends["Stagione"] >= first) & (trends["Stagione"] <= last)]
     top_left, top_right = st.columns(2)
     top_left.plotly_chart(
-        px.line(trends, x="Stagione", y="Gol a Partita", markers=True, title="Gol a partita")
+        charts.area_chart(window, "Stagione", "Gol a Partita", "Gol per partita", fmt=".2f")
     )
-    wins = px.line(trends, x="Stagione", y="% Vittorie Casa", markers=True, title="% vittorie in casa")
-    wins.update_yaxes(tickformat=".0%")
-    top_right.plotly_chart(wins)
+    top_right.plotly_chart(
+        charts.area_chart(window, "Stagione", "% Vittorie Casa", "Vittorie in casa", fmt=".1%")
+    )
     bottom_left, bottom_right = st.columns(2)
-    bottom_left.plotly_chart(px.bar(trends, x="Stagione", y="Gialli a Partita", title="Gialli a partita"))
-    bottom_right.plotly_chart(px.bar(trends, x="Stagione", y="Rossi a Partita", title="Rossi a partita"))
+    bottom_left.plotly_chart(
+        charts.area_chart(window, "Stagione", "Gialli a Partita", "Cartellini gialli per partita",
+                          color=theme.YELLOW, fmt=".2f")
+    )
+    bottom_right.plotly_chart(
+        charts.area_chart(window, "Stagione", "Rossi a Partita", "Cartellini rossi per partita",
+                          color=theme.RED, fmt=".2f")
+    )
