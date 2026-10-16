@@ -11,7 +11,7 @@ Progetto da portfolio di **Mattia Billong**, studente ITS Business Intelligence 
 - Li carica in **MySQL** (Docker) in modo **ripetibile**: l'ETL si può rilanciare senza duplicare i dati.
 - Controlla la **qualità dei dati** (ogni stagione è un girone completo, punti dei campioni riconciliati con le classifiche ufficiali).
 - Li mostra in una **dashboard Power BI** a 4 pagine: classifica, squadra, confronti tra stagioni, disciplina.
-- Li mostra anche in un'**app web Streamlit** (con grafici Plotly) con le stesse 4 pagine, che legge lo stesso database.
+- Li mostra anche in un'**app web Streamlit** (tema scuro, schede KPI, grafici Plotly) che legge lo stesso database, con 7 pagine: Home, Classifica (con la forma recente a pallini), Squadra, Confronti tra stagioni, Disciplina, Insight e About.
 
 ## Architettura
 ```
@@ -73,7 +73,7 @@ L'ETL scrive un riepilogo e il log in `logs/etl.log`. Si può rilanciare quando 
 python -m streamlit run app/main.py
 ```
 
-Si apre su <http://localhost:8501> (Classifica, Squadra, Confronti tra stagioni, Disciplina). L'app è **solo locale**: ascolta solo su `localhost` (impostazione in `.streamlit/config.toml`). Se MySQL è spento, l'app lo dice con un messaggio. La logica sta in `app/queries.py` (funzioni testate) e le pagine in `app/views/`.
+Si apre su <http://localhost:8501> (Home, Classifica, Squadra, Confronti tra stagioni, Disciplina, Insight, About). L'app è **solo locale**: ascolta solo su `localhost` (impostazione in `.streamlit/config.toml`). Se MySQL è spento, l'app lo dice con un messaggio. La logica sta in `app/queries.py` (funzioni testate) e le pagine in `app/views/`.
 
 **Cambiare i parametri del database** (porta, utente, password): le variabili sono elencate in [`.env.example`](.env.example). Un file `.env` è letto **solo da Docker Compose**; l'ETL Python legge le **variabili d'ambiente** della shell, quindi vanno impostate anche lì (per esempio `$env:MYSQL_PORT = "3310"` in PowerShell prima di lanciare `python -m etl.run_etl`). Senza modifiche, entrambi usano i valori predefiniti.
 
@@ -90,7 +90,7 @@ Si apre su <http://localhost:8501> (Classifica, Squadra, Confronti tra stagioni,
 ```
 
 ## Qualità e test
-- **52 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 23 sull'app (query su un mini-campionato con risultati calcolati a mano, connessione al database, rendering delle pagine, configurazione solo locale).
+- **83 test** automatici: 29 sulle fasi dell'ETL (download con cache, profiling, trasformazione, caricamento idempotente, controlli di qualità, gestione degli errori) e 54 sull'app (query su un mini-campionato con risultati calcolati a mano, formati italiani, componenti e grafici, connessione al database, rendering delle 7 pagine, configurazione solo locale).
 - Controlli SQL dopo ogni caricamento: ogni stagione è un **girone completo** (partite = squadre × (squadre − 1): 380 con 20 squadre), due righe di fatto per partita, punti e gol coerenti, **riconciliazione** con i punti ufficiali dei campioni (Juventus 2016/17: 91; Inter 2023/24: 94).
 - Gli errori non previsti dell'ETL finiscono in `logs/etl.log` e il programma esce con codice 1.
 
@@ -109,6 +109,6 @@ Dataset [**Italian Serie A** di DataHub](https://datahub.io/football/italian-ser
 - Specifica e piano di implementazione in [`docs/superpowers/`](docs/superpowers/).
 
 ## Prossimi passi
-- Veste grafica dell'app Streamlit (tema scuro, schede KPI, forma recente a pallini).
+- Screenshot dell'app Streamlit nel README.
 - Conversione della dashboard in formato `.pbip` (testuale, più adatto a Git).
 - CI con GitHub Actions per eseguire i test a ogni push.

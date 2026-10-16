@@ -20,7 +20,7 @@ if not db.check_connection(db.get_engine()):
 ui.inject_css()
 
 pages = [
-    st.Page(home.render, title="Home", url_path="home", default=True),
+    st.Page(home.render, title="Home", default=True),
     st.Page(classifica.render, title="Classifica", url_path="classifica"),
     st.Page(squadra.render, title="Squadra", url_path="squadra"),
     st.Page(confronti.render, title="Confronti tra stagioni", url_path="confronti"),

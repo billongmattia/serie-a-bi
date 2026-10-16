@@ -16,6 +16,39 @@ def test_area_chart_fills_to_zero_and_keeps_data():
     assert fig.layout.title.text == "Gol a partita"
 
 
+def test_area_chart_axis_is_zoomed_on_the_data_not_on_zero():
+    df = pd.DataFrame({"Stagione": ["2016/17", "2017/18"], "Gol a Partita": [2.96, 2.68]})
+    fig = charts.area_chart(df, "Stagione", "Gol a Partita", "Gol a partita")
+    low, high = fig.layout.yaxis.range
+    assert 0 < low < 2.68
+    assert high > 2.96
+
+
+def test_area_chart_axis_never_goes_below_zero_for_non_negative_data():
+    df = pd.DataFrame({"Stagione": ["a", "b"], "Valore": [0.0, 5.0]})
+    fig = charts.area_chart(df, "Stagione", "Valore", "Valori")
+    assert fig.layout.yaxis.range[0] >= 0
+
+
+def test_area_chart_handles_a_single_value():
+    df = pd.DataFrame({"Stagione": ["2016/17"], "Valore": [3.0]})
+    fig = charts.area_chart(df, "Stagione", "Valore", "Valori")
+    low, high = fig.layout.yaxis.range
+    assert low < 3.0 < high
+
+
+def test_charts_use_italian_separators():
+    df = pd.DataFrame({"Stagione": ["2016/17", "2017/18"], "Valore": [1.5, 2.5]})
+    assert charts.area_chart(df, "Stagione", "Valore", "t").layout.separators == ",."
+
+
+def test_hbar_chart_leaves_room_for_the_value_labels():
+    df = pd.DataFrame({"Squadra": ["A", "B"], "Gialli": [1.0, 2.0]})
+    fig = charts.hbar_chart(df, "Gialli", "Squadra", "Gialli")
+    assert fig.layout.xaxis.range[0] == 0
+    assert fig.layout.xaxis.range[1] > 2.0
+
+
 def test_hbar_chart_shows_every_label_and_scales_height():
     df = pd.DataFrame({"Squadra": [f"S{i}" for i in range(20)], "Gialli": [float(i) for i in range(20)]})
     fig = charts.hbar_chart(df, "Gialli", "Squadra", "Gialli per squadra")

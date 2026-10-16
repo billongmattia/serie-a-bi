@@ -15,11 +15,23 @@ def _style(fig, height: int = 320):
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         height=height,
-        margin=dict(l=10, r=10, t=50, b=10),
+        margin=dict(l=10, r=30, t=50, b=10),
         title_font_size=16,
         legend_title_text="",
+        separators=",.",  # formato italiano: virgola decimale, punto per le migliaia
     )
     return fig
+
+
+def _padded_range(values, low_pad: float = 0.6, high_pad: float = 0.4):
+    """Intervallo dell'asse y centrato sui dati (non su zero), con spazio per le etichette."""
+    values = [float(v) for v in values]
+    low, high = min(values), max(values)
+    span = (high - low) or abs(high) * 0.1 or 1.0
+    axis_low = low - span * low_pad
+    if low >= 0:
+        axis_low = max(axis_low, 0.0)
+    return [axis_low, high + span * high_pad]
 
 
 def area_chart(df, x, y, title, color=theme.BLUE, fmt=".2f"):
@@ -30,16 +42,23 @@ def area_chart(df, x, y, title, color=theme.BLUE, fmt=".2f"):
         fillcolor=rgba(color, 0.25),
         textposition="top center",
         texttemplate="%{text:" + fmt + "}",
+        cliponaxis=False,
     )
-    fig.update_yaxes(tickformat=fmt)
+    fig.update_yaxes(tickformat=fmt, range=_padded_range(df[y]))
     return _style(fig)
 
 
 def hbar_chart(df, x, y, title, color=theme.BLUE, fmt=".2f", height=None):
     height = height or max(320, 26 * len(df) + 90)
     fig = px.bar(df, x=x, y=y, orientation="h", title=title, text=x)
-    fig.update_traces(marker_color=color, texttemplate="%{text:" + fmt + "}", textposition="outside")
+    fig.update_traces(
+        marker_color=color,
+        texttemplate="%{text:" + fmt + "}",
+        textposition="outside",
+        cliponaxis=False,
+    )
     fig.update_yaxes(dtick=1, automargin=True)  # tutte le etichette, non una sì e una no
+    fig.update_xaxes(range=[0, float(df[x].max()) * 1.18])  # spazio per l'etichetta a destra
     return _style(fig, height)
 
 
