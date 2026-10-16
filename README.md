@@ -49,6 +49,15 @@ Dettagli, tipi e regole di additività in [`docs/data_dictionary.md`](docs/data_
 
 Le 17 misure DAX sono documentate in [`docs/dax/misure.md`](docs/dax/misure.md). Osservazioni sui dati in [`docs/insights.md`](docs/insights.md).
 
+## App Streamlit
+| Classifica | Squadra |
+|---|---|
+| ![Classifica](docs/screenshots/streamlit-classifica.webp) | ![Squadra](docs/screenshots/streamlit-squadra.webp) |
+| **Confronti tra stagioni** | **Disciplina** |
+| ![Confronti](docs/screenshots/streamlit-confronti.webp) | ![Disciplina](docs/screenshots/streamlit-disciplina.webp) |
+
+La pagina **Home** ([screenshot](docs/screenshots/streamlit-home.webp)) mostra i numeri del database e i campioni di ogni stagione.
+
 ## Come eseguirlo
 **Requisiti:** Python 3.12 o successivo, Docker Desktop, e (solo per la dashboard) Windows con Power BI Desktop e il driver *MySQL Connector/NET*.
 
@@ -109,6 +118,5 @@ Dataset [**Italian Serie A** di DataHub](https://datahub.io/football/italian-ser
 - Specifica e piano di implementazione in [`docs/superpowers/`](docs/superpowers/).
 
 ## Prossimi passi
-- Screenshot dell'app Streamlit nel README.
 - Conversione della dashboard in formato `.pbip` (testuale, più adatto a Git).
 - CI con GitHub Actions per eseguire i test a ogni push.
